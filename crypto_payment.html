@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Crypto Payment</title>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
+
+<style>
+body { font-family: Arial; background:#f4f4f4; text-align:center; }
+.box {
+  background:white;
+  padding:30px;
+  margin:50px auto;
+  max-width:400px;
+  border-radius:10px;
+}
+button {
+  padding:10px 20px;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>💰 Crypto Payment (ETH)</h2>
+
+  <p><b>Product:</b> <span id="product"></span></p>
+  <p><b>Price:</b> <span id="price"></span></p>
+
+  <button onclick="connectWallet()">🔗 Connect Wallet</button>
+  <p id="account">Not connected</p>
+
+  <button onclick="pay()">💳 Pay with MetaMask</button>
+
+  <p id="status"></p>
+</div>
+
+<script>
+const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+
+const abi = [
+  "function deposit() payable"
+];
+
+let provider, signer, contract;   
+let productName = "";
+let productPrice = 0;
+
+// 👉 lấy dữ liệu từ URL
+const params = new URLSearchParams(window.location.search);
+productName = params.get("name") || "Unknown";
+productPrice = params.get("price") || "0";
+
+document.getElementById("product").innerText = productName;
+document.getElementById("price").innerText = productPrice + " ETH";
+
+// CONNECT
+async function connectWallet() {
+  if (typeof window.ethereum === "undefined") {
+    alert("❌ MetaMask chưa được detect! Hãy reload hoặc kiểm tra extension.");
+    console.log("window.ethereum:", window.ethereum);
+    return;
+  }
+
+  try {
+    provider = new ethers.BrowserProvider(window.ethereum);
+
+    await provider.send("eth_requestAccounts", []);
+
+    signer = await provider.getSigner();
+
+    contract = new ethers.Contract(contractAddress, abi, signer);
+
+    const address = await signer.getAddress();
+    document.getElementById("account").innerText = address;
+
+    console.log("✅ Connected:", address);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// PAY
+async function pay() {
+  if (!contract) {
+    alert("Vui lòng kết nối ví trước!");
+    return;
+  }
+
+  try {
+    document.getElementById("status").innerText = "Đang xử lý thanh toán...";
+    const tx = await contract.deposit({ value: ethers.parseEther(productPrice) });
+    await tx.wait();
+
+    // 1. Chuẩn bị dữ liệu sản phẩm
+    let purchasedItems = [];
+    const pendingStr = localStorage.getItem("pendingCart");
+    if (pendingStr) {
+      purchasedItems = JSON.parse(pendingStr);
+    } else {
+      purchasedItems = [{ id: "crypto", name: productName, price: 50000000, qty: 1 }];
+    }
+
+    // 2. Tạo đơn hàng chuẩn
+    const newOrder = {
+      id: "#SF" + Date.now().toString().slice(-6),
+      date: new Date().toLocaleDateString('vi-VN'),
+      items: purchasedItems.length + " sản phẩm",
+      products: purchasedItems.map(i => i.name).join(" · ") || productName,
+      total: (parseFloat(productPrice) * 62000000).toLocaleString('vi-VN') + "đ",
+      statusClass: "status-proc",
+      statusText: "✅ Đã thanh toán (Crypto)",
+      paymentMethod: "Crypto (ETH)"
+    };
+
+    // 3. ĐỒNG BỘ TRỰC TIẾP VÀO USER (Đây là đoạn giải quyết cái bảng trống trong ảnh)
+    const userRaw = localStorage.getItem("currentUserBackup") || localStorage.getItem("currentUser");
+    if (userRaw) {
+      let userData = JSON.parse(userRaw);
+      
+      // Đảm bảo cấu trúc accountData và orders tồn tại
+      if (!userData.accountData) userData.accountData = {};
+      if (!userData.accountData.orders) userData.accountData.orders = [];
+      
+      // Đưa đơn hàng vào tài khoản user
+      userData.accountData.orders.unshift(newOrder);
+      
+      // Ghi đè lại cả 2 để trang chính chắc chắn đọc được
+      localStorage.setItem("currentUser", JSON.stringify(userData));
+      localStorage.setItem("currentUserBackup", JSON.stringify(userData));
+    }
+
+    // 4. Lưu thêm vào danh sách orders chung (để dự phòng)
+    let orders = JSON.parse(localStorage.getItem("orders") || "[]");
+    orders.unshift(newOrder);
+    localStorage.setItem("orders", JSON.stringify(orders));
+
+    document.getElementById("status").innerText = "✅ Thành công! Đang quay về...";
+
+    // 5. DỌN DẸP: Xóa giỏ, giữ lại Backup User
+    localStorage.removeItem("pendingCart");
+    localStorage.removeItem("cart");
+    // Tuyệt đối KHÔNG xóa currentUserBackup ở đây
+
+    setTimeout(() => {
+      window.location.href = "demo3_4_enhanced.html?paid=1&method=crypto";
+    }, 1500);
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById("status").innerText = "❌ Thanh toán thất bại";
+  }
+}
+// 🔥 Đồng bộ vào hệ thống chính
+let allUsers = JSON.parse(localStorage.getItem("SILVER_FLAG_USERS_DATA") || "[]");
+
+const idx = allUsers.findIndex(u => u.username === userData.username);
+if (idx !== -1) {
+  allUsers[idx] = userData;
+  localStorage.setItem("SILVER_FLAG_USERS_DATA", JSON.stringify(allUsers));
+}
+</script>
+
+</body>
+</html>
