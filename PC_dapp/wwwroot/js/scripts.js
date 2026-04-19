@@ -1546,3 +1546,43 @@ if (initialCatalogCount === 0 && productCatalog.length > 0) {
                                     applyCatalogFilters();
 }
                                     syncFavoriteUi();
+function getProductFromModal() {
+  const modal = document.querySelector(".modal"); // hoặc id modal của bạn
+
+  const name = modal.querySelector("h2")?.innerText;
+
+  const price = parseFloat(
+    modal.querySelector(".price")?.innerText.replace(/\D/g, "")
+  );
+
+  const cryptoText = modal.querySelector(".prod-crypto")?.innerText;
+
+  let eth = 0;
+
+  if (cryptoText) {
+    const match = cryptoText.match(/([\d.]+)\s*ETH/);
+    if (match) eth = parseFloat(match[1]);
+  }
+
+  return {
+    id: Date.now(),
+    name,
+    price,
+    eth
+  };
+}
+
+function handleAddClick(el) {
+  const product = getProduct(el); // 🔥 tạo product tại đây
+  addToCart(product);
+}
+
+window.addEventListener('load', async function () {
+  const urlParams = new URLSearchParams(window.location.search);
+  await restoreServerSession();
+
+  if (urlParams.get("paid") === "1") {
+    showToast("🎉 Thanh toán Crypto thành công! Đơn hàng đã được cập nhật.", "");
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+});
