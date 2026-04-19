@@ -3,6 +3,7 @@ using PC_dapp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<BlockchainService>();
+builder.Services.AddSingleton<PendingCryptoCheckoutStore>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
