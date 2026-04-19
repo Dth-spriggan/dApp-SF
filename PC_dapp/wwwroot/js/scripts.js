@@ -1,4 +1,4 @@
-﻿
+
 /* ─── AUTH STATE ─── */
     let currentUser = null; /* null = not logged in */
 
@@ -59,7 +59,7 @@
                                 'product-p10': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200"><rect width="1200" height="1200" fill="#f8fafc" /><path d="M600 220c170 0 240 160 240 310v170c0 115-85 210-190 210H550c-105 0-190-95-190-210V530c0-150 70-310 240-310z" fill="#111827" /><rect x="560" y="315" width="80" height="150" rx="38" fill="#1f2937" /><line x1="600" y1="310" x2="600" y2="460" stroke="#f8fafc" stroke-width="10" stroke-linecap="round" /></svg>`,
                                 'product-p11': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200"><rect width="1200" height="1200" fill="#f3f4f6" /><rect x="320" y="170" width="560" height="860" rx="36" fill="#111827" /><rect x="390" y="250" width="160" height="220" rx="20" fill="#ef4444" /><rect x="610" y="250" width="200" height="110" rx="18" fill="#374151" /><rect x="610" y="400" width="200" height="270" rx="18" fill="#1f2937" /><rect x="390" y="530" width="130" height="180" rx="18" fill="#4b5563" /><rect x="760" y="250" width="28" height="420" rx="12" fill="#ef4444" /><rect x="360" y="780" width="460" height="34" rx="17" fill="#ef4444" /></svg>`
 };
-                                const EXTRA_PRODUCTS = [
+const EXTRA_PRODUCTS = [
                                 {
                                     id: 'fx1',
                                 name: 'Corsair Vengeance DDR5 32GB',
@@ -78,6 +78,26 @@
                                 addToCartPayload: {id: 'fx1', name: 'Corsair Vengeance DDR5 32GB', price: 2190000, oldPrice: 2900000, icon: '💾', nft: false },
   },
                                 ];
+
+async function apiFetch(url, options = {}) {
+  const config = {
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {})
+    },
+    ...options
+  };
+
+  const response = await fetch(url, config);
+  const payload = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(payload?.message || `Yeu cau that bai (${response.status})`);
+  }
+
+  return payload;
+}
 
                                 function cloneCart(items) {
   return (items || []).map(item => ({...item}));
@@ -1302,6 +1322,9 @@ async function handleConfirmPayment() {
 
     const paymentText = document.querySelector('.pay-method.selected')?.textContent || '';
     const paymentName = paymentText.split('\n')[0].trim() || 'Tiền mặt tại cửa hàng';
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    let discount = voucherApplied ? Math.round(subtotal * voucherApplied.pct / 100) : 0;
+    let cryptoDiscount = 0;
 
     const isCrypto = document.querySelector('.pay-method.selected .pay-name')?.textContent.includes('Crypto');
     if (isCrypto && !walletConnected) {
@@ -1323,27 +1346,41 @@ if (isCrypto) {
   });
   if (totalETH <= 0) totalETH = 0.015; // fallback
   const totalTestText = Number(totalETH.toFixed(4)).toString();
+  cryptoDiscount = walletConnected ? Math.round(subtotal * 5 / 100) : 0;
+  const finalTotal = subtotal - discount - cryptoDiscount;
   const checkoutProductName = purchasedItems.length === 1
     ? purchasedItems[0].name
     : `${purchasedItems[0].name} + ${purchasedItems.length - 1} món khác`;
 
   try {
-    await apiFetch('/api/checkout/prepare-crypto', {
+    const prepareResult = await apiFetch('/api/checkout/prepare-crypto', {
       method: 'POST',
       body: JSON.stringify({
+        email,
+        fullName: name,
+        phone,
+        address,
+        paymentMethod: paymentName,
+        totalAmount: finalTotal,
         items: purchasedItems.map(item => ({
           id: item.id,
           name: item.name,
           price: item.price,
           qty: item.qty || 1,
-          nft: !!item.nft,
-          warranty: item.warranty || null,
+          nft: !!item.nft
         })),
-        cryptoAmount: Number(totalTestText),
         tokenSymbol: 'TEST',
-        wallet: walletAddress,
+        wallet: walletAddress
       }),
     });
+
+    localStorage.setItem('pendingCryptoOrder', JSON.stringify({
+      checkoutId: prepareResult.checkoutId,
+      items: purchasedItems,
+      totalAmount: finalTotal
+    }));
+
+    localStorage.setItem('pendingCart', JSON.stringify(purchasedItems));
   } catch (err) {
     showToast(err.message || 'Khong the chuan bi don crypto', 'warn');
     return;
@@ -1353,16 +1390,15 @@ if (isCrypto) {
   showToast(`🚀 Chuyển sang thanh toán Crypto ≈ ${totalTestText} TEST`);
 
   setTimeout(() => {
-    window.location.href = `/Home/CryptoPayment?price=${totalTestText}&name=${encodeURIComponent(checkoutProductName)}`;
+    const pendingOrder = JSON.parse(localStorage.getItem('pendingCryptoOrder') || '{}');
+    window.location.href = `/Home/CryptoPayment?checkoutId=${encodeURIComponent(pendingOrder.checkoutId || '')}&price=${totalTestText}&name=${encodeURIComponent(checkoutProductName)}`;
   }, 700);
 
   return;
 }
 
 
-    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-    let discount = voucherApplied ? Math.round(subtotal * voucherApplied.pct / 100) : 0;
-    let cryptoDiscount = (isCrypto && walletConnected) ? Math.round(subtotal * 5 / 100) : 0;
+    cryptoDiscount = (isCrypto && walletConnected) ? Math.round(subtotal * 5 / 100) : 0;
     const finalTotal = subtotal - discount - cryptoDiscount;
 
     const btn = document.querySelector('.btn-confirm');
