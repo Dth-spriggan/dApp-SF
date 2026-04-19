@@ -1586,3 +1586,8 @@ window.addEventListener('load', async function () {
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 });
+function getProductById(productId) {
+  return productCatalog.find(product => product.id === productId)
+    || EXTRA_PRODUCTS.find(product => product.id === productId)
+    || null;
+}
