@@ -1,0 +1,607 @@
+﻿@model IEnumerable<SilverFlag.Models.Product>
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<!-- ─── MAIN CONTENT ─── -->
+<div class="main">
+
+  <!-- QUICK CATEGORIES -->
+  <div class="quick-cats">
+    <div class="qcat" onclick="handleQuickCategory('cpu-main')">
+      <div class="qcat-icon">⚡</div>
+      <div class="qcat-name">CPU &<br>Mainboard</div>
+    </div>
+    <div class="qcat" onclick="handleQuickCategory('gpu')">
+      <div class="qcat-icon">🖼️</div>
+      <div class="qcat-name">Card<br>Đồ Họa</div>
+    </div>
+    <div class="qcat" onclick="handleQuickCategory('ram-ssd')">
+      <div class="qcat-icon">💾</div>
+      <div class="qcat-name">RAM<br>& SSD</div>
+    </div>
+    <div class="qcat" onclick="handleQuickCategory('monitor')">
+      <div class="qcat-icon">🖥️</div>
+      <div class="qcat-name">Màn<br>Hình</div>
+    </div>
+    <div class="qcat" onclick="handleQuickCategory('case-psu')">
+      <div class="qcat-icon">🏗️</div>
+      <div class="qcat-name">Case<br>& PSU</div>
+    </div>
+    <div class="qcat" onclick="handleQuickCategory('cooling')">
+      <div class="qcat-icon">❄️</div>
+      <div class="qcat-name">Tản<br>Nhiệt</div>
+    </div>
+    <div class="qcat" onclick="handleQuickCategory('peripheral')">
+      <div class="qcat-icon">🖱️</div>
+      <div class="qcat-name">Ngoại<br>Vi</div>
+    </div>
+    <div class="qcat" onclick="handleQuickCategory('gaming-pc')">
+      <div class="qcat-icon">🎮</div>
+      <div class="qcat-name">PC<br>Gaming</div>
+    </div>
+  </div>
+
+  <!-- BANNER + SIDEBAR LAYOUT -->
+  <div class="top-layout">
+    <!-- Banner Area -->
+    <div class="banner-area">
+      <div class="banner-main">
+        <div class="banner-text">
+          <div class="banner-tag">🔥 SIÊU KHUYẾN MÃI</div>
+          <div class="banner-title">NVIDIA<br>RTX 5090</div>
+          <div class="banner-sub">Kiến trúc Blackwell — Hiệu năng đột phá</div>
+          <div class="banner-price">Từ 54.900.000đ</div>
+          <div class="banner-cta" onclick="showToast('Đang xem RTX 5090 Series')">Mua ngay →</div>
+        </div>
+        <div class="banner-visual">
+          <img src="assets/images/banners/hero-rtx5090.svg" alt="RTX 5090 hero banner" loading="lazy">
+        </div>
+      </div>
+      <div class="banner-subs">
+        <div class="banner-sub-card" style="background:linear-gradient(135deg,#b71c1c,#e53935)" onclick="showToast('AMD Ryzen 9000 Series')">
+          <div class="bsc-icon"><img src="assets/images/banners/banner-amd-9950x.svg" alt="AMD Ryzen banner" loading="lazy"></div>
+          <div class="bsc-text">
+            <div class="bsc-label">MỚI RA MẮT</div>
+            <div class="bsc-title">AMD Ryzen 9 9950X</div>
+            <div class="bsc-price">Từ 22.500.000đ</div>
+          </div>
+        </div>
+        <div class="banner-sub-card" style="background:linear-gradient(135deg,#1b5e20,#388e3c)" onclick="showToast('G.Skill DDR5 Flash Sale')">
+          <div class="bsc-icon"><img src="assets/images/banners/banner-ddr5-sale.svg" alt="DDR5 sale banner" loading="lazy"></div>
+          <div class="bsc-text">
+            <div class="bsc-label">⚡ FLASH SALE</div>
+            <div class="bsc-title">RAM DDR5-7200 64GB</div>
+            <div class="bsc-price">Chỉ 6.900.000đ</div>
+          </div>
+        </div>
+        <div class="banner-sub-card" style="background:linear-gradient(135deg,#4a148c,#7b1fa2)" onclick="showToast('Thanh toán Crypto giảm thêm 5%')">
+          <div class="bsc-icon"><img src="assets/images/banners/banner-crypto.svg" alt="Crypto payment banner" loading="lazy"></div>
+          <div class="bsc-text">
+            <div class="bsc-label">WEB3 ƯU ĐÃI</div>
+            <div class="bsc-title">Thanh toán Crypto</div>
+            <div class="bsc-price">Giảm thêm 5%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="right-sidebar">
+      <!-- Wallet Panel -->
+      <div class="wallet-panel">
+        <div class="wallet-panel-head">◈ Web3 Wallet</div>
+        <div class="wallet-panel-body">
+          <div class="wallet-status">
+            <span class="ws-dot" id="wsDot"></span>
+            <span id="wsText">Chưa kết nối ví</span>
+          </div>
+          <button class="connect-mini-btn" id="connectMiniBtn" onclick="openWalletModal()">Kết nối ví →</button>
+          <div class="crypto-rates">
+            <div class="rate-item">
+              <span class="rate-name">⟠ TEST</span>
+              <span class="rate-val rate-up">$3,891 ▲</span>
+            </div>
+            <div class="rate-item">
+              <span class="rate-name">₿ BTC</span>
+              <span class="rate-val rate-up">$67,234 ▲</span>
+            </div>
+            <div class="rate-item">
+              <span class="rate-name">◎ SOL</span>
+              <span class="rate-val rate-down">$189 ▼</span>
+            </div>
+            <div class="rate-item">
+              <span class="rate-name">💲 USDT</span>
+              <span class="rate-val">$1.00 –</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flash Sale Panel -->
+      <div class="flash-panel">
+        <div class="flash-head">
+          ⚡ FLASH SALE
+          <span class="flash-timer" id="flashTimer">05:47:23</span>
+        </div>
+        <div class="flash-item" onclick="openQuickView('p5', event)">
+          <div class="flash-item-name">Samsung 990 Pro 2TB PCIe 5.0</div>
+          <div class="flash-item-prices">
+            <span class="flash-price">3.890.000đ</span>
+            <span class="flash-old">5.200.000đ</span>
+            <span class="flash-pct">-25%</span>
+          </div>
+          <div class="flash-bar"><div class="flash-bar-fill" style="width:68%"></div></div>
+          <div class="flash-item-cta">👁 Xem nhanh</div>
+        </div>
+        <div class="flash-item" onclick="openQuickView('fx1', event)">
+          <div class="flash-item-name">Corsair Vengeance DDR5 32GB</div>
+          <div class="flash-item-prices">
+            <span class="flash-price">2.190.000đ</span>
+            <span class="flash-old">2.900.000đ</span>
+            <span class="flash-pct">-24%</span>
+          </div>
+          <div class="flash-bar"><div class="flash-bar-fill" style="width:82%;background:var(--red)"></div></div>
+          <div class="flash-item-cta">👁 Xem nhanh</div>
+        </div>
+        <div class="flash-item" onclick="openQuickView('p9', event)">
+          <div class="flash-item-name">be quiet! Pure Loop 2 240mm AIO</div>
+          <div class="flash-item-prices">
+            <span class="flash-price">1.650.000đ</span>
+            <span class="flash-old">2.100.000đ</span>
+            <span class="flash-pct">-21%</span>
+          </div>
+          <div class="flash-bar"><div class="flash-bar-fill" style="width:45%"></div></div>
+          <div class="flash-item-cta">👁 Xem nhanh</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAPP PROMO STRIP -->
+  <div class="dapp-strip">
+    <div class="dapp-strip-item">
+      <div class="dsi-icon">◈</div>
+      <div>
+        <div class="dsi-title">Thanh Toán Crypto</div>
+        <div class="dsi-desc">Hỗ trợ ETH, BTC, SOL, USDT và 15+ đồng coin. Tỷ giá real-time, phí gas thấp nhất.</div>
+        <div class="dsi-link" onclick="openWalletModal()">Kết nối ví ngay →</div>
+      </div>
+    </div>
+    <div class="dapp-strip-item">
+      <div class="dsi-icon">🎫</div>
+      <div>
+        <div class="dsi-title">NFT Bảo Hành On-Chain</div>
+        <div class="dsi-desc">Mỗi đơn hàng kèm NFT bảo hành minh bạch, không thể giả mạo. Chuyển nhượng cùng sản phẩm.</div>
+        <div class="dsi-link" onclick="showToast('Xem NFT bảo hành của bạn', 'info')">Xem NFT của tôi →</div>
+      </div>
+    </div>
+    <div class="dapp-strip-item">
+      <div class="dsi-icon">🏛️</div>
+      <div>
+        <div class="dsi-title">DAO Member — Cashback 15%</div>
+        <div class="dsi-desc">Stake NEXUS token, tham gia DAO, nhận cashback mọi đơn hàng và quyền vote sản phẩm.</div>
+        <div class="dsi-link" onclick="showToast('Tham gia NexusDAO', 'info')">Tham gia DAO →</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURED PRODUCTS -->
+  <div class="section-card" id="featuredProductsSection">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="section-icon">🔥</span>
+        <span class="section-title">SẢN PHẨM NỔI BẬT</span>
+        <div class="section-tabs">
+          <div class="sec-tab active" onclick="setTab(this)">Tất cả</div>
+          <div class="sec-tab" onclick="setTab(this)">GPU</div>
+          <div class="sec-tab" onclick="setTab(this)">CPU</div>
+          <div class="sec-tab" onclick="setTab(this)">RAM</div>
+          <div class="sec-tab" onclick="setTab(this)">SSD</div>
+        </div>
+      </div>
+      <span class="see-all" onclick="showToast('Xem tất cả sản phẩm', 'info')">Xem tất cả ›</span>
+    </div>
+
+    <div class="catalog-toolbar">
+      <div class="catalog-summary">Đang hiển thị <strong id="catalogResultCount">5</strong> sản phẩm phù hợp</div>
+      <div class="catalog-tools">
+        <button class="catalog-chip" id="filterNftBtn" onclick="toggleCatalogFlag('nft')">◈ Chỉ NFT</button>
+        <button class="catalog-chip" id="filterSaleBtn" onclick="toggleCatalogFlag('sale')">🏷️ Đang giảm giá</button>
+        <select class="catalog-sort" id="catalogSort" onchange="changeCatalogSort(this.value)">
+          <option value="featured">Sắp xếp: Nổi bật</option>
+          <option value="price-asc">Giá tăng dần</option>
+          <option value="price-desc">Giá giảm dần</option>
+          <option value="name-asc">Tên A-Z</option>
+        </select>
+        <button class="catalog-reset" onclick="resetCatalogFilters()">Xóa bộ lọc</button>
+      </div>
+    </div>
+
+    <div class="product-grid" id="featuredProductGrid">
+
+      <!-- Product 1 -->
+      <div class="prod-card" data-id="p1" data-category="GPU" data-price="47500000" data-old-price="52000000" data-name="NVIDIA GeForce RTX 4090 24GB GDDR6X Founders Edition" data-nft="true" data-sale="true" data-image="inline:product-p1">
+        <div class="prod-badges">
+          <span class="badge badge-hot">HOT</span>
+          <span class="badge badge-nft">NFT</span>
+        </div>
+        <div class="prod-img" onclick="openQuickView('p1', event)">🖼️</div>
+        <div class="prod-name" onclick="openQuickView('p1', event)">NVIDIA GeForce RTX 4090 24GB GDDR6X Founders Edition</div>
+        <div class="prod-specs">
+          <span class="spec">24GB VRAM</span>
+          <span class="spec">Ada Lovelace</span>
+          <span class="spec">450W</span>
+        </div>
+        <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(284)</span></div>
+        <div class="prod-price-row">
+          <span class="prod-price">47.500.000đ</span>
+          <span class="prod-discount">-10%</span>
+        </div>
+        <div class="prod-old">Giá cũ: 52.000.000đ</div>
+        <div class="prod-crypto">≈ 12.2 TEST / 0.71 BTC</div>
+        <div class="prod-nft-badge">◈ Kèm NFT bảo hành 36T</div>
+        <button class="add-cart-btn" onclick="addToCart({id:'p1',name:'NVIDIA GeForce RTX 4090 24GB Founders Edition',price:47500000,eth:12.2,oldPrice:52000000,icon:'🖼️',nft:true,warranty:'36T'})">🛒 Thêm vào giỏ</button>
+        <div class="prod-actions">
+          <button class="prod-ghost-btn" data-favorite-btn="p1" onclick="toggleFavorite('p1', event)">♡ Yêu thích</button>
+          <button class="prod-ghost-btn" onclick="openQuickView('p1', event)">Xem nhanh</button>
+        </div>
+      </div>
+
+      <!-- Product 2 -->
+      <div class="prod-card" data-id="p2" data-category="CPU" data-price="19800000" data-old-price="0" data-name="AMD Ryzen 9 7950X3D 16-Core 3D V-Cache Socket AM5" data-nft="false" data-sale="false" data-image="inline:product-p2">
+        <div class="prod-badges"><span class="badge badge-new">MỚI</span></div>
+        <div class="prod-img" onclick="openQuickView('p2', event)">⚡</div>
+        <div class="prod-name" onclick="openQuickView('p2', event)">AMD Ryzen 9 7950X3D 16-Core 3D V-Cache Socket AM5</div>
+        <div class="prod-specs">
+          <span class="spec">16C/32T</span>
+          <span class="spec">128MB Cache</span>
+          <span class="spec">AM5</span>
+        </div>
+        <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(192)</span></div>
+        <div class="prod-price-row">
+          <span class="prod-price">19.800.000đ</span>
+        </div>
+        <div class="prod-crypto">≈ 5.1 TEST / 0.29 BTC</div>
+        <button class="add-cart-btn" onclick="addToCart({id:'p2',name:'AMD Ryzen 9 7950X3D 16-Core 3D V-Cache AM5',price:19800000,eth:5.1,oldPrice:0,icon:'⚡',nft:false})">🛒 Thêm vào giỏ</button>
+        <div class="prod-actions">
+          <button class="prod-ghost-btn" data-favorite-btn="p2" onclick="toggleFavorite('p2', event)">♡ Yêu thích</button>
+          <button class="prod-ghost-btn" onclick="openQuickView('p2', event)">Xem nhanh</button>
+        </div>
+      </div>
+
+      <!-- Product 3 -->
+      <div class="prod-card" data-id="p3" data-category="Mainboard" data-price="14400000" data-old-price="18000000" data-name="ASUS ROG Maximus Z790 Apex Encore DDR5 Wi-Fi 7" data-nft="true" data-sale="true" data-image="inline:product-p3">
+        <div class="prod-badges"><span class="badge badge-sale">-20%</span></div>
+        <div class="prod-img" onclick="openQuickView('p3', event)">🔩</div>
+        <div class="prod-name" onclick="openQuickView('p3', event)">ASUS ROG Maximus Z790 Apex Encore DDR5 Wi-Fi 7</div>
+        <div class="prod-specs">
+          <span class="spec">DDR5</span>
+          <span class="spec">PCIe 5.0</span>
+          <span class="spec">Wi-Fi 7</span>
+        </div>
+        <div class="prod-rating"><span class="stars">★★★★☆</span><span class="rating-count">(87)</span></div>
+        <div class="prod-price-row">
+          <span class="prod-price">14.400.000đ</span>
+          <span class="prod-old">18.000.000đ</span>
+        </div>
+        <div class="prod-crypto">≈ 3.7 TEST / 0.21 BTC</div>
+        <div class="prod-nft-badge">◈ Kèm NFT bảo hành 24T</div>
+        <button class="add-cart-btn" onclick="addToCart({id:'p3',name:'ASUS ROG Maximus Z790 Apex Encore DDR5 Wi-Fi 7',price:14400000,eth:3.7,oldPrice:18000000,icon:'🔩',nft:true,warranty:'24T'})">🛒 Thêm vào giỏ</button>
+        <div class="prod-actions">
+          <button class="prod-ghost-btn" data-favorite-btn="p3" onclick="toggleFavorite('p3', event)">♡ Yêu thích</button>
+          <button class="prod-ghost-btn" onclick="openQuickView('p3', event)">Xem nhanh</button>
+        </div>
+      </div>
+
+      <!-- Product 4 -->
+      <div class="prod-card" data-id="p4" data-category="RAM" data-price="8900000" data-old-price="0" data-name="G.Skill Trident Z5 RGB DDR5-7200 CL34 64GB (2x32GB)" data-nft="false" data-sale="false" data-image="inline:product-p4">
+        <div class="prod-badges"><span class="badge badge-new">MỚI</span></div>
+        <div class="prod-img" onclick="openQuickView('p4', event)">💾</div>
+        <div class="prod-name" onclick="openQuickView('p4', event)">G.Skill Trident Z5 RGB DDR5-7200 CL34 64GB (2x32GB)</div>
+        <div class="prod-specs">
+          <span class="spec">64GB Kit</span>
+          <span class="spec">DDR5-7200</span>
+          <span class="spec">RGB</span>
+        </div>
+        <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(156)</span></div>
+        <div class="prod-price-row">
+          <span class="prod-price">8.900.000đ</span>
+        </div>
+        <div class="prod-crypto">≈ 2.3 TEST / 0.13 BTC</div>
+        <button class="add-cart-btn" onclick="addToCart({id:'p4',name:'G.Skill Trident Z5 RGB DDR5-7200 CL34 64GB',price:8900000,eth:2.3,oldPrice:0,icon:'💾',nft:false})">🛒 Thêm vào giỏ</button>
+        <div class="prod-actions">
+          <button class="prod-ghost-btn" data-favorite-btn="p4" onclick="toggleFavorite('p4', event)">♡ Yêu thích</button>
+          <button class="prod-ghost-btn" onclick="openQuickView('p4', event)">Xem nhanh</button>
+        </div>
+      </div>
+
+      <!-- Product 5 -->
+      <div class="prod-card" data-id="p5" data-category="SSD" data-price="4200000" data-old-price="5500000" data-name="Samsung 990 Pro 2TB M.2 PCIe 5.0 NVMe 14.7GB/s" data-nft="false" data-sale="true" data-image="inline:product-p5">
+        <div class="prod-badges"><span class="badge badge-hot">HOT</span></div>
+        <div class="prod-img" onclick="openQuickView('p5', event)">🌀</div>
+        <div class="prod-name" onclick="openQuickView('p5', event)">Samsung 990 Pro 2TB M.2 PCIe 5.0 NVMe 14.7GB/s</div>
+        <div class="prod-specs">
+          <span class="spec">2TB</span>
+          <span class="spec">PCIe 5.0</span>
+          <span class="spec">14.7GB/s</span>
+        </div>
+        <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(341)</span></div>
+        <div class="prod-price-row">
+          <span class="prod-price">4.200.000đ</span>
+          <span class="prod-old">5.500.000đ</span>
+          <span class="prod-discount">-24%</span>
+        </div>
+        <div class="prod-crypto">≈ 1.08 TEST / 0.06 BTC</div>
+        <button class="add-cart-btn" onclick="addToCart({id:'p5',name:'Samsung 990 Pro 2TB M.2 PCIe 5.0 NVMe',price:4200000,eth:1.08,oldPrice:5500000,icon:'🌀',nft:false})">🛒 Thêm vào giỏ</button>
+        <div class="prod-actions">
+          <button class="prod-ghost-btn" data-favorite-btn="p5" onclick="toggleFavorite('p5', event)">♡ Yêu thích</button>
+          <button class="prod-ghost-btn" onclick="openQuickView('p5', event)">Xem nhanh</button>
+        </div>
+      </div>
+
+      <!-- Product 6 -->
+      <div class="prod-card" data-id="p6" data-category="Màn hình" data-price="28900000" data-old-price="31900000" data-name="LG UltraGear 32GS95UE 32 inch 4K OLED 240Hz" data-nft="false" data-sale="true" data-image="inline:product-p6">
+        <div class="prod-badges"><span class="badge badge-new">MỚI</span></div>
+        <div class="prod-img" onclick="openQuickView('p6', event)">🖥️</div>
+        <div class="prod-name" onclick="openQuickView('p6', event)">LG UltraGear 32 inch 4K OLED 240Hz</div>
+        <div class="prod-specs">
+          <span class="spec">4K OLED</span>
+          <span class="spec">240Hz</span>
+          <span class="spec">0.03ms</span>
+        </div>
+        <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(64)</span></div>
+        <div class="prod-price-row">
+          <span class="prod-price">28.900.000đ</span>
+          <span class="prod-old">31.900.000đ</span>
+          <span class="prod-discount">-9%</span>
+        </div>
+        <div class="prod-crypto">≈ 7.4 TEST / 0.42 BTC</div>
+        <button class="add-cart-btn" onclick="addToCart({id:'p6',name:'LG UltraGear 32 inch 4K OLED 240Hz',price:28900000,eth:7.4,oldPrice:31900000,icon:'🖥️',nft:false})">🛒 Thêm vào giỏ</button>
+        <div class="prod-actions">
+          <button class="prod-ghost-btn" data-favorite-btn="p6" onclick="toggleFavorite('p6', event)">♡ Yêu thích</button>
+          <button class="prod-ghost-btn" onclick="openQuickView('p6', event)">Xem nhanh</button>
+        </div>
+      </div>
+
+      <!-- Product 7 -->
+      <div class="prod-card" data-id="p7" data-category="Case & PSU" data-price="4690000" data-old-price="0" data-name="NZXT H9 Flow Mid Tower White" data-nft="false" data-sale="false" data-image="inline:product-p7">
+        <div class="prod-badges"><span class="badge badge-hot">HOT</span></div>
+        <div class="prod-img" onclick="openQuickView('p7', event)">🏗️</div>
+        <div class="prod-name" onclick="openQuickView('p7', event)">NZXT H9 Flow Mid Tower White</div>
+        <div class="prod-specs">
+          <span class="spec">Mid Tower</span>
+          <span class="spec">ATX</span>
+          <span class="spec">Dual Chamber</span>
+        </div>
+        <div class="prod-rating"><span class="stars">★★★★☆</span><span class="rating-count">(92)</span></div>
+        <div class="prod-price-row">
+          <span class="prod-price">4.690.000đ</span>
+        </div>
+        <div class="prod-crypto">≈ 1.2 TEST / 0.07 BTC</div>
+        <button class="add-cart-btn" onclick="addToCart({id:'p7',name:'NZXT H9 Flow Mid Tower White',price:4690000,eth:1.2,oldPrice:0,icon:'🏗️',nft:false})">🛒 Thêm vào giỏ</button>
+        <div class="prod-actions">
+          <button class="prod-ghost-btn" data-favorite-btn="p7" onclick="toggleFavorite('p7', event)">♡ Yêu thích</button>
+          <button class="prod-ghost-btn" onclick="openQuickView('p7', event)">Xem nhanh</button>
+        </div>
+      </div>
+
+      <!-- Product 8 -->
+      <div class="prod-card" data-id="p8" data-category="Case & PSU" data-price="3990000" data-old-price="4590000" data-name="Corsair RM1000x Shift 1000W 80 Plus Gold" data-nft="false" data-sale="true" data-image="inline:product-p8">
+        <div class="prod-badges"><span class="badge badge-sale">-13%</span></div>
+        <div class="prod-img" onclick="openQuickView('p8', event)">🔌</div>
+        <div class="prod-name" onclick="openQuickView('p8', event)">Corsair RM1000x Shift 1000W 80 Plus Gold</div>
+        <div class="prod-specs">
+          <span class="spec">1000W</span>
+          <span class="spec">ATX 3.0</span>
+          <span class="spec">80+ Gold</span>
+        </div>
+        <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(118)</span></div>
+        <div class="prod-price-row">
+          <span class="prod-price">3.990.000đ</span>
+          <span class="prod-old">4.590.000đ</span>
+          <span class="prod-discount">-13%</span>
+        </div>
+        <div class="prod-crypto">≈ 1.02 TEST / 0.06 BTC</div>
+        <button class="add-cart-btn" onclick="addToCart({id:'p8',name:'Corsair RM1000x Shift 1000W 80 Plus Gold',price:3990000,eth:1.02,oldPrice:4590000,icon:'🔌',nft:false})">🛒 Thêm vào giỏ</button>
+        <div class="prod-actions">
+          <button class="prod-ghost-btn" data-favorite-btn="p8" onclick="toggleFavorite('p8', event)">♡ Yêu thích</button>
+          <button class="prod-ghost-btn" onclick="openQuickView('p8', event)">Xem nhanh</button>
+        </div>
+      </div>
+
+      <!-- Product 9 -->
+      <div class="prod-card" data-id="p9" data-category="Tản nhiệt" data-price="1650000" data-old-price="2100000" data-name="be quiet! Pure Loop 2 240mm AIO" data-nft="false" data-sale="true" data-image="inline:product-p9">
+        <div class="prod-badges"><span class="badge badge-sale">-21%</span></div>
+        <div class="prod-img" onclick="openQuickView('p9', event)">❄️</div>
+        <div class="prod-name" onclick="openQuickView('p9', event)">be quiet! Pure Loop 2 240mm AIO</div>
+        <div class="prod-specs">
+          <span class="spec">240mm</span>
+          <span class="spec">AIO</span>
+          <span class="spec">ARGB</span>
+        </div>
+        <div class="prod-rating"><span class="stars">★★★★☆</span><span class="rating-count">(53)</span></div>
+        <div class="prod-price-row">
+          <span class="prod-price">1.650.000đ</span>
+          <span class="prod-old">2.100.000đ</span>
+          <span class="prod-discount">-21%</span>
+        </div>
+        <div class="prod-crypto">≈ 0.42 TEST / 0.02 BTC</div>
+        <button class="add-cart-btn" onclick="addToCart({id:'p9',name:'be quiet! Pure Loop 2 240mm AIO',price:1650000,eth:0.42,oldPrice:2100000,icon:'❄️',nft:false})">🛒 Thêm vào giỏ</button>
+        <div class="prod-actions">
+          <button class="prod-ghost-btn" data-favorite-btn="p9" onclick="toggleFavorite('p9', event)">♡ Yêu thích</button>
+          <button class="prod-ghost-btn" onclick="openQuickView('p9', event)">Xem nhanh</button>
+        </div>
+      </div>
+
+      <!-- Product 10 -->
+      <div class="prod-card" data-id="p10" data-category="Ngoại vi" data-price="3290000" data-old-price="3790000" data-name="Logitech G Pro X Superlight 2 Lightspeed" data-nft="false" data-sale="true" data-image="inline:product-p10">
+        <div class="prod-badges"><span class="badge badge-hot">HOT</span></div>
+        <div class="prod-img" onclick="openQuickView('p10', event)">🖱️</div>
+        <div class="prod-name" onclick="openQuickView('p10', event)">Logitech G Pro X Superlight 2 Lightspeed</div>
+        <div class="prod-specs">
+          <span class="spec">Wireless</span>
+          <span class="spec">60g</span>
+          <span class="spec">32K DPI</span>
+        </div>
+        <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(205)</span></div>
+        <div class="prod-price-row">
+          <span class="prod-price">3.290.000đ</span>
+          <span class="prod-old">3.790.000đ</span>
+          <span class="prod-discount">-13%</span>
+        </div>
+        <div class="prod-crypto">≈ 0.84 TEST / 0.05 BTC</div>
+        <button class="add-cart-btn" onclick="addToCart({id:'p10',name:'Logitech G Pro X Superlight 2 Lightspeed',price:3290000,eth:0.84,oldPrice:3790000,icon:'🖱️',nft:false})">🛒 Thêm vào giỏ</button>
+        <div class="prod-actions">
+          <button class="prod-ghost-btn" data-favorite-btn="p10" onclick="toggleFavorite('p10', event)">♡ Yêu thích</button>
+          <button class="prod-ghost-btn" onclick="openQuickView('p10', event)">Xem nhanh</button>
+        </div>
+      </div>
+
+      <!-- Product 11 -->
+      <div class="prod-card" data-id="p11" data-category="PC Gaming" data-price="36900000" data-old-price="39900000" data-name="SilverFlag Titan RTX Gaming PC Ryzen 7 + RTX 4070 Super" data-nft="true" data-sale="true" data-image="inline:product-p11">
+        <div class="prod-badges">
+          <span class="badge badge-hot">HOT</span>
+          <span class="badge badge-nft">NFT</span>
+        </div>
+        <div class="prod-img" onclick="openQuickView('p11', event)">🎮</div>
+        <div class="prod-name" onclick="openQuickView('p11', event)">SilverFlag Titan RTX Gaming PC Ryzen 7 + RTX 4070 Super</div>
+        <div class="prod-specs">
+          <span class="spec">Ryzen 7</span>
+          <span class="spec">RTX 4070 Super</span>
+          <span class="spec">32GB DDR5</span>
+        </div>
+        <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(41)</span></div>
+        <div class="prod-price-row">
+          <span class="prod-price">36.900.000đ</span>
+          <span class="prod-old">39.900.000đ</span>
+          <span class="prod-discount">-8%</span>
+        </div>
+        <div class="prod-crypto">≈ 9.4 TEST / 0.54 BTC</div>
+        <div class="prod-nft-badge">◈ Kèm NFT bảo hành 24T</div>
+        <button class="add-cart-btn" onclick="addToCart({id:'p11',name:'SilverFlag Titan RTX Gaming PC Ryzen 7 + RTX 4070 Super',price:36900000, eth:9.4,oldPrice:39900000,icon:'🎮',nft:true,warranty:'24T'})">🛒 Thêm vào giỏ</button>
+        <div class="prod-actions">
+          <button class="prod-ghost-btn" data-favorite-btn="p11" onclick="toggleFavorite('p11', event)">♡ Yêu thích</button>
+          <button class="prod-ghost-btn" onclick="openQuickView('p11', event)">Xem nhanh</button>
+        </div>
+      </div>
+
+    </div>
+    <div class="catalog-empty" id="catalogEmptyState">
+      <div class="catalog-empty-icon">🔎</div>
+      <div class="catalog-empty-title">Không có sản phẩm phù hợp</div>
+      <div class="catalog-empty-sub">Hãy thử từ khóa khác hoặc xóa bộ lọc để xem lại danh mục nổi bật.</div>
+    </div>
+  </div>
+
+  <!-- BRAND STRIP -->
+  <div class="brand-strip">
+    <div class="brand-strip-title">Thương Hiệu Hàng Đầu</div>
+    <div class="brand-logos">
+      <div class="brand-logo"><img src="assets/images/brands/nvidia.svg" alt="NVIDIA" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/amd.svg" alt="AMD" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/intel.svg" alt="Intel" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/asus-rog.svg" alt="ASUS ROG" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/msi.svg" alt="MSI" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/gigabyte.svg" alt="Gigabyte" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/corsair.svg" alt="Corsair" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/gskill.svg" alt="G.Skill" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/samsung.svg" alt="Samsung" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/wd.svg" alt="WD" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/be-quiet.svg" alt="be quiet!" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/nzxt.svg" alt="NZXT" loading="lazy"></div>
+    </div>
+  </div>
+
+  <!-- NFT WARRANTY SECTION -->
+  <div class="nft-section">
+    <div class="nft-head">
+      <div>
+        <div class="nft-head-title">🎫 NFT Bảo Hành — Blockchain Warranty</div>
+        <div class="nft-head-sub">Minh bạch · Không thể giả mạo · Chuyển nhượng được · On-chain Polygon</div>
+      </div>
+      <div class="nft-head-right">
+        <div style="font-size:13px;font-weight:700">1,234 NFT đã mint</div>
+        <div>Xem trên OpenSea →</div>
+      </div>
+    </div>
+    <div class="nft-cards">
+      <div class="nft-card">
+        <div class="nft-card-icon">🖼️</div>
+        <div class="nft-card-info">
+          <div class="nft-card-title">RTX 4090 Warranty NFT</div>
+          <div class="nft-card-meta">Bảo hành 36 tháng · Polygon</div>
+          <div class="nft-card-status">
+            <div class="nft-status-dot" style="background:var(--green)"></div>
+            <span class="nft-card-token">#W-0042</span>
+          </div>
+        </div>
+      </div>
+      <div class="nft-card">
+        <div class="nft-card-icon">⚡</div>
+        <div class="nft-card-info">
+          <div class="nft-card-title">CPU Ryzen Warranty NFT</div>
+          <div class="nft-card-meta">Bảo hành 36 tháng · Polygon</div>
+          <div class="nft-card-status">
+            <div class="nft-status-dot" style="background:var(--green)"></div>
+            <span class="nft-card-token">#W-0199</span>
+          </div>
+        </div>
+      </div>
+      <div class="nft-card">
+        <div class="nft-card-icon">🔩</div>
+        <div class="nft-card-info">
+          <div class="nft-card-title">Mainboard Warranty NFT</div>
+          <div class="nft-card-meta">Bảo hành 24 tháng · Polygon</div>
+          <div class="nft-card-status">
+            <div class="nft-status-dot" style="background:var(--orange)"></div>
+            <span class="nft-card-token">#W-0874</span>
+          </div>
+        </div>
+      </div>
+      <div class="nft-card" style="background:var(--purple-light);cursor:pointer" onclick="showToast('Kết nối ví để xem NFT của bạn', 'info')">
+        <div class="nft-card-icon">◈</div>
+        <div class="nft-card-info">
+          <div class="nft-card-title" style="color:var(--purple)">Xem NFT của tôi</div>
+          <div class="nft-card-meta">Kết nối ví để kiểm tra bảo hành</div>
+          <div class="nft-card-status">
+            <div class="nft-card-token" style="color:var(--blue);cursor:pointer">Kết nối ngay →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BENEFITS -->
+  <div class="benefits-bar">
+    <div class="benefit-item">
+      <div class="benefit-icon">🚚</div>
+      <div class="benefit-text">
+        <div class="benefit-title">Giao hàng toàn quốc</div>
+        <div class="benefit-sub">Miễn phí từ 500.000đ</div>
+      </div>
+    </div>
+    <div class="benefit-item">
+      <div class="benefit-icon">🔄</div>
+      <div class="benefit-text">
+        <div class="benefit-title">Đổi trả 30 ngày</div>
+        <div class="benefit-sub">Lỗi 1 đổi 1 trong 12 tháng</div>
+      </div>
+    </div>
+    <div class="benefit-item">
+      <div class="benefit-icon">◈</div>
+      <div class="benefit-text">
+        <div class="benefit-title">Thanh toán Crypto</div>
+        <div class="benefit-sub">ETH, BTC, SOL, USDT — giảm 5%</div>
+      </div>
+    </div>
+    <div class="benefit-item">
+      <div class="benefit-icon">🎫</div>
+      <div class="benefit-text">
+        <div class="benefit-title">NFT Bảo hành số</div>
+        <div class="benefit-sub">On-chain · Chuyển nhượng được</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->

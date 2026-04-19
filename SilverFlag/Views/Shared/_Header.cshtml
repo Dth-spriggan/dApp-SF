@@ -1,0 +1,78 @@
+﻿<!-- ─── TOPBAR ─── -->
+<div class="topbar">
+    <div class="topbar-inner">
+        <div class="topbar-left">
+            <a href="#">📍 Hà Nội</a>
+            <span class="topbar-sep">|</span>
+            <a href="#">TP. HCM</a>
+            <span class="topbar-sep">|</span>
+            <a href="#">Chuỗi 18 cửa hàng</a>
+            <span class="topbar-sep">|</span>
+            <a href="#">📞 1800 6018</a>
+        </div>
+        <div class="topbar-right">
+            <div class="web3-badge">
+                <span class="web3-dot"></span>
+                Web3 Ready
+            </div>
+            <span class="topbar-sep">|</span>
+            <a href="#">Tra đơn hàng</a>
+            <span class="topbar-sep">|</span>
+            <a href="#">Kiểm tra bảo hành</a>
+            <span class="topbar-sep">|</span>
+            <a href="#">NFT Ví của tôi</a>
+        </div>
+    </div>
+</div>
+
+<!-- ─── HEADER ─── -->
+<header>
+    <div class="header-inner">
+        <div class="logo">
+            <div class="logo-main">Silver<span>Flag</span>PC</div>
+            <div class="logo-sub">CHÍNH HÃNG — WEB3</div>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" placeholder="Tìm kiếm CPU, GPU, RAM, Mainboard, SSD..." id="searchInput">
+            <button class="search-btn" onclick="doSearch()">🔍</button>
+        </div>
+
+        <div class="header-actions">
+            <button class="wallet-connect-btn" id="walletHeaderBtn" onclick="openWalletModal()">
+                <span>◈</span>
+                <span id="walletHeaderText">Kết nối ví</span>
+            </button>
+            <div class="header-btn" id="headerAccBtn" onclick="handleAccountClick()">
+                <span class="icon">👤</span>
+                <span class="label" id="headerAccLabel">Đăng nhập</span>
+            </div>
+            <div class="header-btn" onclick="openFavoritesModal()">
+                <span class="icon">❤️</span>
+                <span class="label">Yêu thích</span>
+                <div class="cart-count fav-count" id="favoriteCount">0</div>
+            </div>
+            <div class="header-btn" onclick="openCartDrawer()">
+                <span class="icon">🛒</span>
+                <span class="label">Giỏ hàng</span>
+                <div class="cart-count" id="cartCount">3</div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ─── NAV BAR ─── -->
+<div class="nav-bar">
+    <div class="nav-inner">
+        <div class="nav-item active" data-nav-key="home" onclick="handleNavAction('home', this)"><span class="nav-icon">🏠</span> Trang chủ</div>
+        <div class="nav-item" data-nav-key="cpu-main" onclick="handleNavAction('cpu-main', this)"><span class="nav-icon">💻</span> CPU & Mainboard</div>
+        <div class="nav-item" data-nav-key="gpu" onclick="handleNavAction('gpu', this)"><span class="nav-icon">🖼️</span> Card đồ họa</div>
+        <div class="nav-item" data-nav-key="ram-ssd" onclick="handleNavAction('ram-ssd', this)"><span class="nav-icon">💾</span> RAM & SSD</div>
+        <div class="nav-item" data-nav-key="monitor" onclick="handleNavAction('monitor', this)"><span class="nav-icon">🖥️</span> Màn hình</div>
+        <div class="nav-item" data-nav-key="case-psu" onclick="handleNavAction('case-psu', this)"><span class="nav-icon">🏗️</span> Case & PSU</div>
+        <div class="nav-item" data-nav-key="peripheral" onclick="handleNavAction('peripheral', this)"><span class="nav-icon">🖱️</span> Thiết bị ngoại vi</div>
+        <div class="nav-item" data-nav-key="build-pc" onclick="handleNavAction('build-pc', this)"><span class="nav-icon">🔧</span> Build PC</div>
+        <div class="nav-item nav-highlight" onclick="showToast('Trang NFT Marketplace', 'info')">🏅 NFT Market</div>
+        <div class="nav-item nav-highlight" onclick="showToast('Trang NexusDAO', 'info')">◈ DAO</div>
+    </div>
+</div>

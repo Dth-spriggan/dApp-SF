@@ -1,0 +1,584 @@
+﻿<!-- ─── AUTH MODAL ─── -->
+<div class="auth-modal-overlay" id="authModal" onclick="authOverlayClick(event)">
+  <div class="auth-modal">
+
+    <div class="auth-modal-banner">
+      <div class="auth-close-btn" onclick="closeAuthModal()">✕</div>
+      <div class="auth-modal-logo">Silver<span>Flag</span>PC</div>
+      <div class="auth-tagline">Chính hãng · Web3 · NFT bảo hành</div>
+    </div>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Đăng nhập</div>
+      <div class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Đăng ký</div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div class="auth-body" id="formLogin">
+      <div class="auth-form-group">
+        <label class="auth-label">Email hoặc số điện thoại</label>
+        <input class="auth-input" id="loginEmail" type="text" placeholder="email@example.com" oninput="clearAuthErr('loginEmailErr')">
+        <div class="auth-error-msg" id="loginEmailErr">Vui lòng nhập email hợp lệ</div>
+      </div>
+      <div class="auth-form-group">
+        <label class="auth-label">Mật khẩu</label>
+        <div class="auth-input-wrap">
+          <input class="auth-input" id="loginPw" type="password" placeholder="Nhập mật khẩu" oninput="clearAuthErr('loginPwErr')">
+          <span class="auth-eye" onclick="togglePw('loginPw',this)">👁</span>
+        </div>
+        <div class="auth-error-msg" id="loginPwErr">Mật khẩu không đúng</div>
+      </div>
+      <div class="auth-row">
+        <label class="auth-check-label">
+          <input type="checkbox" id="rememberMe" checked> Ghi nhớ đăng nhập
+        </label>
+        <span class="auth-forgot" onclick="showForgotPw()">Quên mật khẩu?</span>
+      </div>
+      <button class="auth-submit-btn" id="loginBtn" onclick="doLogin()">Đăng nhập</button>
+      <div class="auth-divider">hoặc tiếp tục với</div>
+      <div class="auth-social-btns">
+        <button class="auth-social-btn" onclick="socialLogin('Web3')">◈ Ví Web3</button>
+      </div>
+      <div class="auth-footer-text">Chưa có tài khoản? <span onclick="switchAuthTab('register')">Đăng ký ngay</span></div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div class="auth-body" id="formRegister" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <div class="auth-form-group">
+          <label class="auth-label">Họ</label>
+          <input class="auth-input" id="regLast" type="text" placeholder="Nguyễn">
+        </div>
+        <div class="auth-form-group">
+          <label class="auth-label">Tên</label>
+          <input class="auth-input" id="regFirst" type="text" placeholder="Văn A">
+        </div>
+      </div>
+      <div class="auth-form-group">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" id="regEmail" type="email" placeholder="email@example.com" oninput="clearAuthErr('regEmailErr')">
+        <div class="auth-error-msg" id="regEmailErr">Email không hợp lệ hoặc đã tồn tại</div>
+      </div>
+      <div class="auth-form-group">
+        <label class="auth-label">Số điện thoại</label>
+        <input class="auth-input" id="regPhone" type="tel" placeholder="0912 345 678">
+      </div>
+      <div class="auth-form-group">
+        <label class="auth-label">Mật khẩu</label>
+        <div class="auth-input-wrap">
+          <input class="auth-input" id="regPw" type="password" placeholder="Tối thiểu 8 ký tự" oninput="checkPwStrength(this.value)">
+          <span class="auth-eye" onclick="togglePw('regPw',this)">👁</span>
+        </div>
+        <div class="pw-strength"><div class="pw-strength-fill" id="pwStrengthBar" style="width:0%;background:var(--red)"></div></div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:4px" id="pwStrengthTxt"></div>
+      </div>
+      <div class="auth-form-group" style="margin-bottom:18px">
+        <label class="auth-label">Xác nhận mật khẩu</label>
+        <input class="auth-input" id="regPw2" type="password" placeholder="Nhập lại mật khẩu" oninput="clearAuthErr('regPw2Err')">
+        <div class="auth-error-msg" id="regPw2Err">Mật khẩu không khớp</div>
+      </div>
+      <button class="auth-submit-btn" id="registerBtn" onclick="doRegister()">Tạo tài khoản</button>
+      <div class="auth-footer-text" style="margin-top:12px">Đã có tài khoản? <span onclick="switchAuthTab('login')">Đăng nhập</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── ACCOUNT PAGE ─── -->
+<div class="account-page" id="accountPage">
+
+  <div class="acc-header">
+    <div class="acc-header-inner">
+      <div class="acc-back-btn" onclick="closeAccountPage()">‹</div>
+      <div class="acc-avatar" id="accAvatar">NV</div>
+      <div class="acc-user-info">
+        <div class="acc-user-name" id="accUserName">Nguyễn Văn A</div>
+        <div class="acc-user-email" id="accUserEmail">user@silverflag.vn</div>
+        <div class="acc-user-badges">
+          <span class="acc-badge gold">⭐ GOLD MEMBER</span>
+          <span class="acc-badge web3" id="accWeb3Badge" style="display:none">◈ WEB3</span>
+        </div>
+      </div>
+    </div>
+    <div class="acc-stats">
+      <div class="acc-stat">
+        <div class="acc-stat-val" id="accOrderCount">12</div>
+        <div class="acc-stat-lbl">Đơn hàng</div>
+      </div>
+      <div class="acc-stat">
+        <div class="acc-stat-val" id="accPointsTop">4.200</div>
+        <div class="acc-stat-lbl">Điểm thưởng</div>
+      </div>
+      <div class="acc-stat">
+        <div class="acc-stat-val" id="accNftCount">5</div>
+        <div class="acc-stat-lbl">NFT bảo hành</div>
+      </div>
+      <div class="acc-stat">
+        <div class="acc-stat-val">GOLD</div>
+        <div class="acc-stat-lbl">Hạng thành viên</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-body">
+    <!-- Sidebar nav -->
+    <div class="acc-nav">
+      <div class="acc-nav-item active" onclick="switchAccPanel('orders',this)"><span class="acc-nav-icon">📦</span> Đơn hàng <span class="acc-nav-badge" id="accOrdersBadge">12</span></div>
+      <div class="acc-nav-item" onclick="switchAccPanel('profile',this)"><span class="acc-nav-icon">👤</span> Hồ sơ</div>
+      <div class="acc-nav-item" onclick="switchAccPanel('nft',this)"><span class="acc-nav-icon">◈</span> NFT bảo hành <span class="acc-nav-badge" id="accNftBadge" style="background:var(--purple)">5</span></div>
+      <div class="acc-nav-item" onclick="switchAccPanel('loyalty',this)"><span class="acc-nav-icon">⭐</span> Điểm thưởng</div>
+      <div class="acc-nav-item" onclick="switchAccPanel('address',this)"><span class="acc-nav-icon">📍</span> Địa chỉ</div>
+      <div class="acc-nav-item" onclick="switchAccPanel('security',this)"><span class="acc-nav-icon">🔒</span> Bảo mật</div>
+    </div>
+
+    <!-- Main content -->
+    <div style="min-width:0">
+
+      <!-- ORDERS PANEL -->
+      <div class="acc-panel active" id="panel-orders">
+        <div class="acc-card">
+          <div class="acc-card-head">
+            <div class="acc-card-title">📦 Đơn hàng của tôi</div>
+            <span class="acc-card-action">Xem tất cả</span>
+          </div>
+          <div class="acc-card-body" style="padding:16px" id="accOrdersList"></div>
+        </div>
+      </div>
+
+      <!-- PROFILE PANEL -->
+      <div class="acc-panel" id="panel-profile">
+        <div class="acc-card">
+          <div class="acc-card-head">
+            <div class="acc-card-title">👤 Thông tin cá nhân</div>
+          </div>
+          <div class="acc-card-body">
+            <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)">
+              <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--red-light),var(--red));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;flex-shrink:0" id="profileAvatar">NV</div>
+              <div>
+                <div style="font-size:14px;font-weight:700;margin-bottom:4px" id="profileName">Nguyễn Văn A</div>
+                <div style="font-size:12px;color:var(--text-3);margin-bottom:8px">Thành viên từ tháng 3/2023</div>
+                <button class="acc-save-btn" style="padding:6px 14px;font-size:12px" onclick="showToast('Tính năng upload ảnh đang phát triển','info')">📷 Đổi ảnh đại diện</button>
+              </div>
+            </div>
+            <div class="acc-form-grid">
+              <div class="acc-form-group">
+                <label class="acc-form-label">Họ</label>
+                <input class="acc-form-input" id="pfLast" value="Nguyễn">
+              </div>
+              <div class="acc-form-group">
+                <label class="acc-form-label">Tên</label>
+                <input class="acc-form-input" id="pfFirst" value="Văn A">
+              </div>
+              <div class="acc-form-group">
+                <label class="acc-form-label">Email</label>
+                <input class="acc-form-input" id="pfEmail" value="nguyenvana@gmail.com">
+              </div>
+              <div class="acc-form-group">
+                <label class="acc-form-label">Số điện thoại</label>
+                <input class="acc-form-input" id="pfPhone" value="0912 345 678">
+              </div>
+              <div class="acc-form-group">
+                <label class="acc-form-label">Ngày sinh</label>
+                <input class="acc-form-input" id="pfDob" type="date" value="1995-06-15">
+              </div>
+              <div class="acc-form-group">
+                <label class="acc-form-label">Giới tính</label>
+                <select class="acc-form-input" id="pfGender">
+                  <option>Nam</option><option>Nữ</option><option>Khác</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-top:16px">
+              <button class="acc-save-btn" onclick="saveProfile()">💾 Lưu thay đổi</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NFT PANEL -->
+      <div class="acc-panel" id="panel-nft">
+        <div class="acc-card">
+          <div class="acc-card-head">
+            <div class="acc-card-title">◈ NFT Bảo hành của tôi</div>
+            <span class="acc-card-action" onclick="showToast('Xem trên OpenSea','info')">Xem trên OpenSea →</span>
+          </div>
+          <div class="acc-card-body">
+            <div style="background:var(--blue-light);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--blue);margin-bottom:16px;display:flex;align-items:center;gap:8px">
+              ℹ️ NFT bảo hành được mint on-chain trên Polygon. Mỗi NFT đại diện cho 1 sản phẩm và có thể chuyển nhượng kèm sản phẩm.
+            </div>
+            <div class="acc-nft-grid" id="accNftGrid"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOYALTY PANEL -->
+      <div class="acc-panel" id="panel-loyalty">
+        <div class="acc-card">
+          <div class="acc-card-head">
+            <div class="acc-card-title">⭐ Điểm thưởng & Hạng thành viên</div>
+          </div>
+          <div class="acc-card-body">
+            <div style="text-align:center;padding:16px 0 20px">
+              <div class="acc-points-big" id="loyaltyPoints">4.200</div>
+              <div class="acc-points-lbl">điểm SilverFlag</div>
+              <div style="font-size:12px;color:var(--text-3);margin-top:6px">≈ 420.000đ quy đổi</div>
+            </div>
+            <div class="acc-tier-row">
+              <div class="acc-tier-item"><div class="acc-tier-dot reached"></div><div class="acc-tier-name">SILVER<br>0đ</div></div>
+              <div class="acc-tier-item"><div class="acc-tier-dot reached"></div><div class="acc-tier-name">GOLD<br>2M</div></div>
+              <div class="acc-tier-item"><div class="acc-tier-dot"></div><div class="acc-tier-name">PLATINUM<br>10M</div></div>
+              <div class="acc-tier-item"><div class="acc-tier-dot"></div><div class="acc-tier-name">DIAMOND<br>50M</div></div>
+            </div>
+            <div class="acc-loyalty-bar-wrap"><div class="acc-loyalty-bar" id="loyaltyBar" style="width:42%"></div></div>
+            <div style="font-size:12px;color:var(--text-3);margin-bottom:20px">Cần thêm <b style="color:var(--orange)">5.800 điểm</b> để đạt hạng PLATINUM</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+              <div style="background:var(--orange-light);border-radius:8px;padding:14px;text-align:center">
+                <div style="font-size:20px;font-weight:800;color:var(--orange)">×2</div>
+                <div style="font-size:11px;color:var(--text-2);margin-top:4px">Điểm x2 khi<br>thanh toán Crypto</div>
+              </div>
+              <div style="background:var(--purple-light);border-radius:8px;padding:14px;text-align:center">
+                <div style="font-size:20px;font-weight:800;color:var(--purple)">-15%</div>
+                <div style="font-size:11px;color:var(--text-2);margin-top:4px">Ưu đãi GOLD<br>mọi đơn hàng</div>
+              </div>
+              <div style="background:var(--green-light);border-radius:8px;padding:14px;text-align:center">
+                <div style="font-size:20px;font-weight:800;color:var(--green)">FREE</div>
+                <div style="font-size:11px;color:var(--text-2);margin-top:4px">Vận chuyển<br>miễn phí mọi đơn</div>
+              </div>
+            </div>
+            <div style="margin-top:16px">
+              <button class="acc-save-btn" onclick="showToast('Quy đổi 100 điểm = 10.000đ giảm giá','info')">🎁 Quy đổi điểm thưởng</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADDRESS PANEL -->
+      <div class="acc-panel" id="panel-address">
+        <div class="acc-card">
+          <div class="acc-card-head">
+            <div class="acc-card-title">📍 Địa chỉ giao hàng</div>
+            <span class="acc-card-action" onclick="showToast('Thêm địa chỉ mới','info')">+ Thêm địa chỉ</span>
+          </div>
+          <div class="acc-card-body" style="display:flex;flex-direction:column;gap:12px">
+            <div style="border:2px solid var(--red);border-radius:10px;padding:16px;position:relative">
+              <div style="position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;background:var(--red);color:#fff;padding:2px 8px;border-radius:10px">Mặc định</div>
+              <div style="font-size:14px;font-weight:700;margin-bottom:4px">Nguyễn Văn A</div>
+              <div style="font-size:13px;color:var(--text-2)">0912 345 678</div>
+              <div style="font-size:13px;color:var(--text-2);margin-top:4px">123 Đường Cầu Giấy, Phường Dịch Vọng,<br>Quận Cầu Giấy, TP. Hà Nội</div>
+              <div style="margin-top:10px;display:flex;gap:8px">
+                <button class="acc-order-btn outline" onclick="showToast('Sửa địa chỉ','info')">Chỉnh sửa</button>
+                <button class="acc-order-btn outline" onclick="showToast('Không thể xóa địa chỉ mặc định','warn')">Xóa</button>
+              </div>
+            </div>
+            <div style="border:1px solid var(--border);border-radius:10px;padding:16px">
+              <div style="font-size:14px;font-weight:700;margin-bottom:4px">Nguyễn Văn A — Văn phòng</div>
+              <div style="font-size:13px;color:var(--text-2)">0912 345 678</div>
+              <div style="font-size:13px;color:var(--text-2);margin-top:4px">456 Đường Láng, Phường Thịnh Quang,<br>Quận Đống Đa, TP. Hà Nội</div>
+              <div style="margin-top:10px;display:flex;gap:8px">
+                <button class="acc-order-btn outline" onclick="showToast('Đặt làm địa chỉ mặc định','info')">Đặt mặc định</button>
+                <button class="acc-order-btn outline" onclick="showToast('Sửa địa chỉ','info')">Chỉnh sửa</button>
+                <button class="acc-order-btn outline" onclick="showToast('Đã xóa địa chỉ','warn')">Xóa</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECURITY PANEL -->
+      <div class="acc-panel" id="panel-security">
+        <div class="acc-card">
+          <div class="acc-card-head">
+            <div class="acc-card-title">🔒 Bảo mật tài khoản</div>
+          </div>
+          <div class="acc-card-body">
+            <div class="acc-security-item">
+              <div class="acc-security-left">
+                <div class="acc-security-icon">🔑</div>
+                <div><div class="acc-security-name">Mật khẩu</div><div class="acc-security-desc">Đổi lần cuối: 3 tháng trước</div></div>
+              </div>
+              <button class="acc-order-btn outline" onclick="showToast('Tính năng đổi mật khẩu','info')">Đổi mật khẩu</button>
+            </div>
+            <div class="acc-security-item">
+              <div class="acc-security-left">
+                <div class="acc-security-icon">📱</div>
+                <div><div class="acc-security-name">Xác thực 2 lớp (2FA)</div><div class="acc-security-desc">Bảo vệ tài khoản bằng OTP</div></div>
+              </div>
+              <div class="acc-toggle on" id="toggle2FA" onclick="toggleSecurity(this,'2FA')"></div>
+            </div>
+            <div class="acc-security-item">
+              <div class="acc-security-left">
+                <div class="acc-security-icon">📧</div>
+                <div><div class="acc-security-name">Thông báo email</div><div class="acc-security-desc">Nhận email khi có đơn hàng mới</div></div>
+              </div>
+              <div class="acc-toggle on" id="toggleEmail" onclick="toggleSecurity(this,'Email')"></div>
+            </div>
+            <div class="acc-security-item">
+              <div class="acc-security-left">
+                <div class="acc-security-icon">◈</div>
+                <div><div class="acc-security-name">Đăng nhập Web3</div><div class="acc-security-desc" id="web3LoginDesc">Chưa kết nối ví</div></div>
+              </div>
+              <div class="acc-toggle" id="toggleWeb3" onclick="toggleSecurity(this,'Web3')"></div>
+            </div>
+          </div>
+        </div>
+        <div class="acc-card">
+          <div class="acc-card-head"><div class="acc-card-title">⚠️ Vùng nguy hiểm</div></div>
+          <div class="acc-card-body">
+            <button class="acc-logout-btn" onclick="doLogout()">🚪 Đăng xuất tài khoản</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ─── CART DRAWER ─── -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCartDrawer()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cd-head">
+    <div class="cd-head-left">
+      <span style="font-size:20px">🛒</span>
+      <span class="cd-head-title">Giỏ hàng của bạn</span>
+      <span class="cd-head-count" id="cdHeadCount">3 sản phẩm</span>
+    </div>
+    <div class="cd-close" onclick="closeCartDrawer()">✕</div>
+  </div>
+
+  <div class="cd-crypto-bar">
+    <span>⟠ Thanh toán Crypto — Giảm thêm <b>5%</b> · Token DAO giảm <b>15%</b></span>
+    <span id="cdWalletStatus" style="opacity:0.7">Chưa kết nối ví</span>
+  </div>
+
+  <div class="cd-items" id="cdItems">
+    <!-- items rendered by JS -->
+  </div>
+
+  <div class="cd-voucher" id="cdVoucherBar">
+    <div style="width:100%">
+      <div style="display:flex;gap:8px">
+        <input type="text" id="voucherInput" placeholder="Nhập mã giảm giá (VD: NEXUS15)">
+        <button class="cd-voucher-btn" onclick="applyVoucher()">Áp dụng</button>
+      </div>
+      <div class="cd-voucher-msg" id="voucherMsg"></div>
+    </div>
+  </div>
+
+  <div class="cd-summary" id="cdSummary">
+    <div class="cd-sum-row">
+      <span>Tạm tính (<span id="cdItemCount">3</span> sản phẩm)</span>
+      <span id="cdSubtotal">76.200.000đ</span>
+    </div>
+    <div class="cd-sum-row discount" id="cdDiscountRow" style="display:none">
+      <span>🏷️ Mã giảm giá</span>
+      <span id="cdDiscountAmt">-0đ</span>
+    </div>
+    <div class="cd-sum-row discount" id="cdCryptoDiscRow" style="display:none">
+      <span>⟠ Giảm giá Crypto (-5%)</span>
+      <span id="cdCryptoAmt">-0đ</span>
+    </div>
+    <div class="cd-sum-row" style="color:var(--green);font-size:12px">
+      <span>🚚 Phí vận chuyển</span>
+      <span>Miễn phí</span>
+    </div>
+    <div class="cd-sum-row nft-row">
+      <span>◈ NFT bảo hành (<span id="cdNftCount">3</span> sản phẩm)</span>
+      <span>FREE</span>
+    </div>
+    <hr class="cd-sum-divider">
+    <div class="cd-sum-total">
+      <span class="cd-sum-total-label">Tổng thanh toán</span>
+      <span class="cd-sum-total-val" id="cdTotal">76.200.000đ</span>
+    </div>
+    <button class="cd-checkout-btn" id="cdCheckoutBtn" onclick="proceedToCheckout()">
+      ✅ Đặt hàng ngay
+    </button>
+    <button class="cd-continue-btn" onclick="closeCartDrawer()">← Tiếp tục mua hàng</button>
+  </div>
+</div>
+
+<!-- ─── MODALS ─── -->
+
+<!-- Checkout Modal -->
+<div class="modal-overlay" id="checkoutModal" onclick="closeModalOutside(event,'checkoutModal')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title">🛒 Thanh Toán Đơn Hàng</div>
+      <span class="modal-close" onclick="closeModal('checkoutModal')">✕</span>
+    </div>
+    <div class="modal-body">
+      <div class="checkout-grid">
+        <div>
+          <div class="form-group">
+            <label class="form-label">Họ và tên *</label>
+            <input class="form-input" type="text" placeholder="Nguyễn Văn A">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Số điện thoại *</label>
+            <input class="form-input" type="tel" placeholder="0912 345 678">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Địa chỉ giao hàng</label>
+            <input class="form-input" type="text" placeholder="Số nhà, tên đường, phường...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email (nhận hóa đơn & NFT)</label>
+            <input class="form-input" type="email" placeholder="email@example.com">
+          </div>
+        </div>
+        <div>
+          <div class="payment-section">
+            <div class="payment-label">Phương thức thanh toán</div>
+            <div class="payment-methods">
+              <div class="pay-method" onclick="selectPay(this)">
+                <input type="radio" name="pay">
+                <span class="pay-icon">🏦</span>
+                <div class="pay-info">
+                  <div class="pay-name">Chuyển khoản ngân hàng</div>
+                  <div class="pay-desc">Vietcombank, BIDV, MB Bank...</div>
+                </div>
+              </div>
+              <div class="pay-method selected" onclick="selectPay(this)">
+                <input type="radio" name="pay" checked>
+                <span class="pay-icon">⟠</span>
+                <div class="pay-info">
+                  <div class="pay-name">Thanh toán Crypto</div>
+                  <div class="pay-desc">ETH, BTC, SOL, USDT</div>
+                </div>
+                <span class="pay-extra green">Giảm 5%</span>
+              </div>
+              <div class="pay-method" onclick="selectPay(this)">
+                <input type="radio" name="pay">
+                <span class="pay-icon">💳</span>
+                <div class="pay-info">
+                  <div class="pay-name">Thẻ ATM / Visa / Master</div>
+                  <div class="pay-desc">Thanh toán online an toàn</div>
+                </div>
+              </div>
+              <div class="pay-method" onclick="selectPay(this)">
+                <input type="radio" name="pay">
+                <span class="pay-icon">🏛️</span>
+                <div class="pay-info">
+                  <div class="pay-name">NEXUS Token (DAO)</div>
+                  <div class="pay-desc">Dành cho thành viên DAO</div>
+                </div>
+                <span class="pay-extra purple">Giảm 15%</span>
+              </div>
+              <div class="pay-method" onclick="selectPay(this)">
+                <input type="radio" name="pay">
+                <span class="pay-icon">💵</span>
+                <div class="pay-info">
+                  <div class="pay-name">Tiền mặt tại cửa hàng</div>
+                  <div class="pay-desc">Nhận hàng và thanh toán</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-summary">
+        <div class="os-title">Tóm tắt đơn hàng (3 sản phẩm)</div>
+        <div class="os-row"><span>RTX 4090 24GB Founders</span><span>47.500.000đ</span></div>
+        <div class="os-row"><span>Ryzen 9 7950X3D</span><span>19.800.000đ</span></div>
+        <div class="os-row"><span>G.Skill 64GB DDR5-7200</span><span>8.900.000đ</span></div>
+        <div class="os-row"><span>Phí vận chuyển</span><span style="color:var(--green)">Miễn phí</span></div>
+        <div class="os-row"><span>Giảm giá Crypto (-5%)</span><span style="color:var(--green)">-3.810.000đ</span></div>
+        <div class="os-row os-total"><span>Tổng thanh toán</span><span>72.390.000đ</span></div>
+        <div class="os-row"><span class="os-nft">◈ 3 NFT bảo hành sẽ được mint sau khi thanh toán</span><span class="os-nft">Free</span></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('checkoutModal')">Hủy</button>
+      <button class="btn-confirm" onclick="handleConfirmPayment()">✅ Xác nhận đặt hàng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Wallet Modal -->
+<div class="modal-overlay" id="walletModal" onclick="closeModalOutside(event,'walletModal')">
+  <div class="wallet-modal-box">
+    <div class="wallet-modal-head">
+      <div class="wmh-icon">◈</div>
+      <div class="wmh-title">Kết Nối Ví Web3</div>
+      <div class="wmh-sub">Thanh toán crypto · NFT bảo hành · DAO</div>
+    </div>
+    <div class="wallet-opts">
+      <div class="wallet-opt" onclick="connectWallet('MetaMask')">
+        <span class="wo-icon">🦊</span>
+        <div class="wo-info">
+          <div class="wo-name">MetaMask</div>
+          <div class="wo-desc">Phổ biến nhất · EVM Chains</div>
+        </div>
+        <span class="wo-arr">›</span>
+      </div>
+      <div class="wallet-opt" onclick="connectWallet('Phantom')">
+        <span class="wo-icon">👻</span>
+        <div class="wo-info">
+          <div class="wo-name">Phantom Wallet</div>
+          <div class="wo-desc">Tốt nhất cho Solana</div>
+        </div>
+        <span class="wo-arr">›</span>
+      </div>
+      <div class="wallet-opt" onclick="connectWallet('WalletConnect')">
+        <span class="wo-icon">🔗</span>
+        <div class="wo-info">
+          <div class="wo-name">WalletConnect</div>
+          <div class="wo-desc">Quét QR · Mọi ví di động</div>
+        </div>
+        <span class="wo-arr">›</span>
+      </div>
+      <div class="wallet-opt" onclick="connectWallet('Coinbase Wallet')">
+        <span class="wo-icon">🔵</span>
+        <div class="wo-info">
+          <div class="wo-name">Coinbase Wallet</div>
+          <div class="wo-desc">Bảo mật · Dễ dùng</div>
+        </div>
+        <span class="wo-arr">›</span>
+      </div>
+    </div>
+</div>
+</div>
+
+<div class="modal-overlay" id="quickViewModal" onclick="closeModalOutside(event,'quickViewModal')">
+  <div class="quick-view-box">
+    <div class="modal-head">
+      <div class="modal-title">👁️ Xem nhanh sản phẩm</div>
+      <span class="modal-close" onclick="closeModal('quickViewModal')">✕</span>
+    </div>
+    <div class="qv-grid">
+      <div class="qv-visual" id="qvVisual">🖼️</div>
+      <div>
+        <div class="qv-head">
+          <div class="qv-title" id="qvTitle">Tên sản phẩm</div>
+          <button class="qv-secondary" id="qvFavoriteBtn" onclick="toggleFavoriteFromQuickView()">♡ Yêu thích</button>
+        </div>
+        <div class="qv-meta" id="qvMeta"></div>
+        <div class="qv-price-row">
+          <div class="qv-price" id="qvPrice">0đ</div>
+          <div class="qv-old" id="qvOldPrice"></div>
+        </div>
+        <div class="qv-desc" id="qvDesc"></div>
+        <div class="qv-specs" id="qvSpecs"></div>
+        <div class="qv-benefits" id="qvBenefits"></div>
+        <div class="qv-actions">
+          <button class="qv-primary" id="qvAddCartBtn">🛒 Thêm vào giỏ</button>
+          <button class="qv-secondary" onclick="closeModal('quickViewModal')">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="favoritesModal" onclick="closeModalOutside(event,'favoritesModal')">
+  <div class="favorites-box">
+    <div class="modal-head">
+      <div class="modal-title">❤️ Danh sách yêu thích</div>
+      <span class="modal-close" onclick="closeModal('favoritesModal')">✕</span>
+    </div>
+    <div class="favorites-body" id="favoritesBody"></div>
+  </div>
+</div>
+
+<!-- Toasts -->
+<div class="toasts" id="toasts"></div>
