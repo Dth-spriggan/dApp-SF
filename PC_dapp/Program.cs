@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using PC_dapp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton<BlockchainService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
