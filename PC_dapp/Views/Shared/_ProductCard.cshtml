@@ -1,0 +1,83 @@
+﻿@model PC_dapp.Models.Product
+
+@{
+    // Logic render Icon dựa trên tên danh mục
+    string GetIcon(string category) {
+        if (category == null) return "📦";
+        if (category.Contains("CPU")) return "⚡";
+        if (category.Contains("VGA") || category.Contains("Card")) return "🖼️";
+        if (category.Contains("Mainboard")) return "🔩";
+        if (category.Contains("RAM")) return "💾";
+        if (category.Contains("SSD")) return "🌀";
+        if (category.Contains("Màn hình")) return "🖥️";
+        if (category.Contains("Case")) return "🏗️";
+        if (category.Contains("Ngoại vi")) return "🖱️";
+        return "📦";
+    }
+
+    string categoryName = Model.Category != null ? Model.Category.Name : "Khác";
+
+    // --- VÌ MODEL HIỆN TẠI CHƯA CÓ CÁC CỘT MỞ RỘNG, TA TẠM MOCK DỮ LIỆU ĐỂ UI KHÔNG BỊ VỠ ---
+    decimal oldPriceMock = Model.PriceVnd * 1.2m; // Giả lập giá cũ cao hơn 20%
+    bool isSale = true; 
+    string[] specsList = new string[] { "Chính hãng", "Mới 100%" }; // Giả lập thông số
+    int warrantyMonthsMock = 36; // Giả lập bảo hành 36 tháng cho mọi sản phẩm có sẵn
+    int ratingCountMock = 99; // Giả lập lượt đánh giá
+}
+
+<div class="prod-card" 
+     data-id="p@(Model.ProductId)" 
+     data-category="@categoryName" 
+     data-price="@Model.PriceVnd" 
+     data-old-price="@oldPriceMock" 
+     data-name="@Model.Name" 
+     data-nft="@(warrantyMonthsMock > 0 ? "true" : "false")" 
+     data-sale="@(isSale ? "true" : "false")" 
+     data-image="">
+    
+    <div class="prod-badges">
+        @if (isSale) { 
+            <span class="badge badge-sale">-@Math.Round((1 - Model.PriceVnd / oldPriceMock) * 100)%</span> 
+        }
+        @if (warrantyMonthsMock > 0) { 
+            <span class="badge badge-nft">NFT</span> 
+        }
+    </div>
+    
+    <div class="prod-img" onclick="openQuickView('p@(Model.ProductId)', event)">
+        @GetIcon(categoryName)
+    </div>
+    
+    <div class="prod-name" onclick="openQuickView('p@(Model.ProductId)', event)">@Model.Name</div>
+    
+    <div class="prod-specs">
+        @foreach (var spec in specsList)
+        {
+            <span class="spec">@spec</span>
+        }
+    </div>
+    
+    <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(@ratingCountMock)</span></div>
+    
+    <div class="prod-price-row">
+        <span class="prod-price">@Model.PriceVnd.ToString("N0")đ</span>
+        @if (isSale) {
+            <span class="prod-old">@oldPriceMock.ToString("N0")đ</span>
+        }
+    </div>
+    
+    <div class="prod-crypto">≈ @(Model.PriceCrypto ?? 0) ETH</div>
+    
+    @if (warrantyMonthsMock > 0) {
+        <div class="prod-nft-badge">◈ Kèm NFT bảo hành @(warrantyMonthsMock)T</div>
+    }
+
+    <button class="add-cart-btn" onclick="addToCart({id:'p@(Model.ProductId)',name:'@Model.Name',price:@Model.PriceVnd,oldPrice:@oldPriceMock,icon:'@GetIcon(categoryName)',nft:@(warrantyMonthsMock > 0 ? "true" : "false")})">
+        🛒 Thêm vào giỏ
+    </button>
+    
+    <div class="prod-actions">
+        <button class="prod-ghost-btn" data-favorite-btn="p@(Model.ProductId)" onclick="toggleFavorite('p@(Model.ProductId)', event)">♡ Yêu thích</button>
+        <button class="prod-ghost-btn" onclick="openQuickView('p@(Model.ProductId)', event)">Xem nhanh</button>
+    </div>
+</div>
