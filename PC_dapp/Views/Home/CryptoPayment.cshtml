@@ -68,10 +68,12 @@ const abi = [
 let provider, signer, contract;
 let productName = "";
 let productPrice = "0";
+let checkoutId = "";
 
 const params = new URLSearchParams(window.location.search);
 productName = params.get("name") || "Unknown";
 productPrice = params.get("price") || "0";
+checkoutId = params.get("checkoutId") || "";
 
 document.getElementById("product").innerText = productName;
 document.getElementById("price").innerText = productPrice + " TEST";
@@ -135,6 +137,11 @@ async function pay() {
     return;
   }
 
+  if (!checkoutId) {
+    document.getElementById("status").innerText = "Khong tim thay checkout crypto dang cho xac nhan.";
+    return;
+  }
+
   try {
     document.getElementById("status").innerText = "Dang xu ly thanh toan...";
 
@@ -151,22 +158,26 @@ async function pay() {
     });
     await tx.wait();
 
-    await fetch('/api/checkout/complete-crypto', {
+    const response = await fetch('/api/checkout/complete-crypto', {
       method: 'POST',
       credentials: 'same-origin',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        checkoutId,
         txHash: tx.hash,
         wallet: await signer.getAddress()
       })
-    }).then(async response => {
-      if (!response.ok) {
-        const payload = await response.json().catch(() => null);
-        throw new Error(payload?.message || 'Khong the cap nhat don hang vao database.');
-      }
     });
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null);
+      throw new Error(payload?.message || 'Khong the cap nhat don hang vao database.');
+    }
+
+    localStorage.removeItem('pendingCryptoOrder');
+    localStorage.removeItem('pendingCart');
 
     document.getElementById("status").innerText = "Thanh cong. Dang quay ve...";
 
