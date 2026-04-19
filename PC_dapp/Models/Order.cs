@@ -20,6 +20,7 @@ public partial class Order
     public string? Status { get; set; }
 
     public DateTime? CreatedAt { get; set; }
+    public string? ShippingAddress { get; set; }
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 

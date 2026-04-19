@@ -3,11 +3,7 @@
     let currentUser = null; /* null = not logged in */
 
     /* Demo accounts for testing */
-    const DEMO_ACCOUNTS = {
-        'demo@silverflag.vn': {pw: '123456', name: 'Nguyễn Văn A', phone: '0912 345 678', avatar: 'NV', points: 4200, orders: 12, nfts: 5 },
-    'admin@silverflag.vn': {pw: 'admin123', name: 'Admin SilverFlag', phone: '1800 6018', avatar: 'AD', points: 99000, orders: 88, nfts: 20 },
-};
-
+    
     const DEMO_ACCOUNT_DETAILS = {
         'demo@silverflag.vn': {
         orders: [
@@ -1247,6 +1243,11 @@ document.addEventListener('keydown', e => {
                                     <div class="os-row os-total"><span>Tổng thanh toán</span><span>${fmt(total)}</span></div>
                                     ${nftCount > 0 ? `<div class="os-row"><span class="os-nft">◈ ${nftCount} NFT bảo hành sẽ được mint sau khi thanh toán</span><span class="os-nft">Free</span></div>` : ''}
                                     `;
+                                        if (currentUser) {
+                                            document.getElementById('checkoutName').value = currentUser.name || '';
+                                            document.getElementById('checkoutPhone').value = currentUser.phone || '';
+                                            document.getElementById('checkoutEmail').value = currentUser.email || '';
+                                        }
                                     document.getElementById('checkoutModal').classList.add('active');
 }
                                     function openWalletModal() {
@@ -1282,30 +1283,82 @@ document.addEventListener('keydown', e => {
                                     el.classList.add('selected');
                                     el.querySelector('input').checked = true;
 }
-                                    function handleConfirmPayment() {
-  if (!currentUser) {
-                                        closeModal('checkoutModal');
-                                    openAuthModal();
-                                    showToast('Ban can dang nhap de xac nhan thanh toan', 'warn');
-                                    return;
-  }
-                                    if (!walletConnected && document.querySelector('.pay-method.selected .pay-name')?.textContent.includes('Crypto')) {
-                                        closeModal('checkoutModal');
-                                    openWalletModal();
-                                    showToast('⚠️ Vui lòng kết nối ví để thanh toán Crypto', 'warn');
-                                    return;
-  }
-                                    const purchasedItems = cloneCart(cart);
-                                    closeModal('checkoutModal');
-                                    const orderId = createOrderId();
-                                    const result = addCompletedPurchaseToAccount(purchasedItems, orderId);
-                                    cart = [];
-                                    voucherApplied = null;
-                                    updateCartCount();
-                                    persistCurrentState();
-                                    showToast('⏳ Đang xử lý đơn hàng...');
-  setTimeout(() => showToast(`🚀 Đặt hàng thành công! Mã ĐH: ${orderId}`), 1200);
-  if (result.nftCount > 0) setTimeout(() => showToast(`🎫 ${result.nftCount} NFT bảo hành đã được mint vào ví!`), 2800);
+async function handleConfirmPayment() {
+    if (!currentUser) {
+        closeModal('checkoutModal'); openAuthModal();
+        showToast('Vui lòng đăng nhập trước khi đặt hàng', 'warn'); return;
+    }
+
+    // 1. VÉT SẠCH DỮ LIỆU TỪ FORM
+    const name = document.getElementById('checkoutName').value.trim();
+    const phone = document.getElementById('checkoutPhone').value.trim();
+    const address = document.getElementById('checkoutAddress').value.trim();
+    const email = document.getElementById('checkoutEmail').value.trim();
+
+    if (!name || !phone || !address || !email) {
+        showToast('⚠️ Vui lòng điền đầy đủ thông tin giao hàng!', 'warn');
+        return;
+    }
+
+    const paymentText = document.querySelector('.pay-method.selected')?.textContent || '';
+    const paymentName = paymentText.split('\n')[0].trim() || 'Tiền mặt tại cửa hàng';
+
+    const isCrypto = document.querySelector('.pay-method.selected .pay-name')?.textContent.includes('Crypto');
+    if (isCrypto && !walletConnected) {
+        closeModal('checkoutModal'); openWalletModal();
+        showToast('⚠️ Vui lòng kết nối ví để thanh toán Crypto', 'warn'); return;
+    }
+
+
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    let discount = voucherApplied ? Math.round(subtotal * voucherApplied.pct / 100) : 0;
+    let cryptoDiscount = (isCrypto && walletConnected) ? Math.round(subtotal * 5 / 100) : 0;
+    const finalTotal = subtotal - discount - cryptoDiscount;
+
+    const btn = document.querySelector('.btn-confirm');
+    const originalText = btn.textContent;
+    btn.textContent = '⏳ Đang xử lý...'; btn.style.pointerEvents = 'none'; btn.style.opacity = '0.8';
+
+    try {
+        // 2. GÓI DỮ LIỆU ĐẦY ĐỦ GỬI XUỐNG C#
+        const payload = {
+            Email: email,
+            FullName: name,
+            Phone: phone,
+            Address: address, // Đã lấy được địa chỉ
+            PaymentMethod: paymentName,
+            TotalAmount: finalTotal,
+            TokenSymbol: isCrypto ? "ETH" : "VND",
+            TxHash: isCrypto ? "0x" + Math.random().toString(16).slice(2, 12) + "..." : null,
+            Wallet: isCrypto ? walletAddress : null,
+            Items: cart.map(item => ({ Id: item.id, Name: item.name, Price: item.price, Qty: item.qty, Nft: item.nft }))
+        };
+
+        const response = await fetch('/api/checkout/place-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            closeModal('checkoutModal');
+            const purchasedItems = cloneCart(cart);
+            cart = []; voucherApplied = null; updateCartCount(); persistCurrentState();
+            addCompletedPurchaseToAccount(purchasedItems, "#SF" + result.orderId);
+            showToast(`🚀 Đặt hàng thành công! Mã ĐH: #SF${result.orderId}`);
+            if (purchasedItems.some(i => i.nft)) {
+                setTimeout(() => showToast(`🎫 NFT bảo hành đã được mint vào ví!`), 2800);
+            }
+        } else {
+            showToast('❌ ' + (result.message || 'Lỗi xử lý đơn hàng!'), 'warn');
+        }
+    } catch (error) {
+        console.error("Lỗi API:", error); showToast('❌ Mất kết nối server!', 'warn');
+    } finally {
+        btn.textContent = originalText; btn.style.pointerEvents = 'auto'; btn.style.opacity = '1';
+    }
 }
 
                                     /* ─── TABS ─── */

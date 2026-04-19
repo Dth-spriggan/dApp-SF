@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PC_dapp.Models;
 
 namespace PC_dapp.Controllers
@@ -14,67 +15,56 @@ namespace PC_dapp.Controllers
             _context = context;
         }
 
-        [HttpPost("crypto")]
-        public async Task<IActionResult> ProcessCryptoCheckout([FromBody] CryptoOrderRequest request)
+        [HttpPost("place-order")]
+        public async Task<IActionResult> PlaceOrder([FromBody] CheckoutDto request)
         {
-            // 1. Kiểm tra ví đã kết nối chưa
-            if (string.IsNullOrEmpty(request.WalletAddress))
-                return BadRequest(new { message = "Chưa kết nối ví Web3!" });
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (user == null)
+            {
+                return Unauthorized(new { message = "Không tìm thấy user. Vui lòng đăng nhập!" });
+            }
 
-            // 2. Lưu Order vào Database
+            // 1. Tạo đối tượng Order
             var newOrder = new Order
             {
-                // Tạm thời gán UserID = 2 (User demo) nếu chưa làm hệ thống Login JWT
-                UserId = 2,
+                UserId = user.UserId,
+                ShippingAddress = request.Address,  // Nhớ Ctrl+S bên file Order.cs để hết báo đỏ dòng này nhé
                 TotalAmount = request.TotalAmount,
-                TokenSymbol = "ETH",
-                TxHash = request.TxHash,
-                Wallet = request.WalletAddress,
-                Status = "Paid", // Đã thanh toán qua Crypto
+                TokenSymbol = string.IsNullOrEmpty(request.TokenSymbol) ? null : request.TokenSymbol,
+                TxHash = string.IsNullOrEmpty(request.TxHash) ? null : request.TxHash,
+                Wallet = string.IsNullOrEmpty(request.Wallet) ? null : request.Wallet,
+                Status = "Đang xử lý",
                 CreatedAt = DateTime.Now
             };
 
             _context.Orders.Add(newOrder);
-            await _context.SaveChangesAsync(); // Lưu để lấy OrderId
-
-            // 3. Lưu chi tiết OrderDetails
-            foreach (var item in request.CartItems)
-            {
-                var detail = new OrderDetail
-                {
-                    OrderId = newOrder.OrderId,
-                    ProductId = item.ProductId,
-                    UnitPrice = item.Price,
-                    SerialNumber = "SN-" + Guid.NewGuid().ToString().Substring(0, 8).ToUpper()
-                };
-                _context.OrderDetails.Add(detail);
-            }
             await _context.SaveChangesAsync();
 
-            // 4. Trả về thành công để Frontend báo Toast và tiến hành Mint NFT
-            return Ok(new
+            // 2. Lưu chi tiết sản phẩm (Lưu nhiều dòng thay vì dùng cột Quantity)
+            if (request.Items != null)
             {
-                success = true,
-                orderId = newOrder.OrderId,
-                message = "Lưu đơn hàng Web3 thành công!"
-            });
+                foreach (var item in request.Items)
+                {
+                    int pId = 0;
+                    int.TryParse(new string(item.Id.Where(char.IsDigit).ToArray()), out pId);
+
+                    // Khách mua bao nhiêu cái (item.Qty), ta tạo bấy nhiêu dòng OrderDetail
+                    for (int i = 0; i < item.Qty; i++)
+                    {
+                        var detail = new OrderDetail
+                        {
+                            OrderId = newOrder.OrderId,
+                            ProductId = pId > 0 ? pId : 1,
+                            UnitPrice = item.Price
+                            // SerialNumber tạm để null, nhân viên kho sẽ nhập sau khi xuất hàng
+                        };
+                        _context.OrderDetails.Add(detail);
+                    }
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            return Ok(new { success = true, orderId = newOrder.OrderId, message = "Thành công!" });
         }
-    }
-
-    // Các class dùng để hứng dữ liệu JSON từ Frontend
-    public class CryptoOrderRequest
-    {
-        public string WalletAddress { get; set; }
-        public string TxHash { get; set; }
-        public decimal TotalAmount { get; set; }
-        public List<CartItemDto> CartItems { get; set; }
-    }
-
-    public class CartItemDto
-    {
-        public int ProductId { get; set; }
-        public decimal Price { get; set; }
-        public int Qty { get; set; }
-        public bool Nft { get; set; }
     }
 }
