@@ -1,0 +1,191 @@
+@{
+    Layout = null;
+    var returnUrl = Url.Action("Index", "Home") ?? "/";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto Payment</title>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
+
+<style>
+body { font-family: Arial, sans-serif; background:#f4f4f4; text-align:center; margin:0; padding:24px; }
+.box {
+  background:white;
+  padding:30px;
+  margin:50px auto;
+  max-width:400px;
+  border-radius:10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+button {
+  padding:10px 20px;
+  margin-top:10px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Crypto Payment (TEST)</h2>
+
+  <p><b>Product:</b> <span id="product"></span></p>
+  <p><b>Price:</b> <span id="price"></span></p>
+
+  <button type="button" onclick="connectWallet()">Connect Wallet</button>
+  <p id="account">Not connected</p>
+
+  <button type="button" onclick="pay()">Pay with MetaMask</button>
+
+  <p id="status"></p>
+</div>
+
+<script>
+const returnUrl = "@returnUrl";
+const contractAddress = "0xdc251d82647e3FA2c4D5200eCcd3622b85d61263";
+const sapphireTestnet = {
+  chainId: "0x5aff",
+  chainName: "Oasis Sapphire Testnet",
+  nativeCurrency: {
+    name: "TEST",
+    symbol: "TEST",
+    decimals: 18
+  },
+  rpcUrls: ["https://testnet.sapphire.oasis.dev"],
+  blockExplorerUrls: ["https://explorer.oasis.io/testnet/sapphire"]
+};
+
+const abi = [
+  "function deposit(uint256 orderId) payable",
+  "function getOrder(uint256 orderId) view returns (address buyer, address seller, uint256 amount, uint8 status)"
+];
+
+let provider, signer, contract;
+let productName = "";
+let productPrice = "0";
+
+const params = new URLSearchParams(window.location.search);
+productName = params.get("name") || "Unknown";
+productPrice = params.get("price") || "0";
+
+document.getElementById("product").innerText = productName;
+document.getElementById("price").innerText = productPrice + " TEST";
+
+async function ensureSapphireNetwork() {
+  const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
+  if (currentChainId === sapphireTestnet.chainId) {
+    return;
+  }
+
+  try {
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: sapphireTestnet.chainId }]
+    });
+  } catch (error) {
+    if (error.code === 4902) {
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [sapphireTestnet]
+      });
+      return;
+    }
+
+    throw error;
+  }
+}
+
+function syncUserOrder(userData) {
+  return;
+}
+
+async function connectWallet() {
+  if (typeof window.ethereum === "undefined") {
+    alert("MetaMask chua duoc detect. Hay reload hoac kiem tra extension.");
+    return;
+  }
+
+  try {
+    await ensureSapphireNetwork();
+    provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+
+    signer = await provider.getSigner();
+    contract = new ethers.Contract(contractAddress, abi, signer);
+
+    const address = await signer.getAddress();
+    document.getElementById("account").innerText = address;
+    document.getElementById("status").innerText = "";
+
+    console.log("Connected:", address);
+  } catch (err) {
+    console.error(err);
+    document.getElementById("status").innerText = "Khong the ket noi dung mang Oasis Sapphire testnet.";
+  }
+}
+
+async function pay() {
+  if (!contract) {
+    alert("Vui long ket noi vi truoc.");
+    return;
+  }
+
+  try {
+    document.getElementById("status").innerText = "Dang xu ly thanh toan...";
+
+    const value = ethers.parseEther(productPrice);
+    const chainOrderId = BigInt(Date.now());
+    const txRequest = await contract.deposit.populateTransaction(chainOrderId, { value });
+
+    console.log("deposit tx request:", txRequest);
+
+    const tx = await signer.sendTransaction({
+      to: contractAddress,
+      data: txRequest.data,
+      value
+    });
+    await tx.wait();
+
+    await fetch('/api/checkout/complete-crypto', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        txHash: tx.hash,
+        wallet: await signer.getAddress()
+      })
+    }).then(async response => {
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        throw new Error(payload?.message || 'Khong the cap nhat don hang vao database.');
+      }
+    });
+
+    document.getElementById("status").innerText = "Thanh cong. Dang quay ve...";
+
+    setTimeout(() => {
+      window.location.href = `${returnUrl}?paid=1&method=crypto`;
+    }, 1500);
+  } catch (e) {
+    console.error(e);
+    const message = e?.info?.error?.message || e?.shortMessage || e?.message || "Thanh toan that bai";
+
+    if (message.includes("too many errors")) {
+      document.getElementById("status").innerText = "RPC cua MetaMask dang loi hoac qua tai. Thu lai sau hoac doi RPC Sapphire testnet trong MetaMask.";
+      return;
+    }
+
+    document.getElementById("status").innerText = message;
+  }
+}
+</script>
+
+</body>
+</html>
