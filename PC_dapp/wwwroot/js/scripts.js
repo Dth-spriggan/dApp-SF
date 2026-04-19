@@ -1591,3 +1591,13 @@ function getProductById(productId) {
     || EXTRA_PRODUCTS.find(product => product.id === productId)
     || null;
 }
+async function restoreServerSession() {
+  try {
+    const user = await apiFetch('/api/account/me');
+    if (user) {
+      simulateLogin(user);
+    }
+  } catch (err) {
+    currentUser = null;
+  }
+}
