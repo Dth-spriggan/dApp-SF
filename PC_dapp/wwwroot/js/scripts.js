@@ -1308,6 +1308,56 @@ async function handleConfirmPayment() {
         closeModal('checkoutModal'); openWalletModal();
         showToast('⚠️ Vui lòng kết nối ví để thanh toán Crypto', 'warn'); return;
     }
+if (isCrypto) {
+  if (!walletConnected) {
+    closeModal('checkoutModal');
+    openWalletModal();
+    showToast('⚠️ Vui lòng kết nối ví', 'warn');
+    return;
+  }
+
+  const purchasedItems = cloneCart(cart);
+  let totalETH = 0;
+  purchasedItems.forEach(item => {
+    if (item.eth) totalETH += (item.eth * (item.qty || 1));
+  });
+  if (totalETH <= 0) totalETH = 0.015; // fallback
+  const totalTestText = Number(totalETH.toFixed(4)).toString();
+  const checkoutProductName = purchasedItems.length === 1
+    ? purchasedItems[0].name
+    : `${purchasedItems[0].name} + ${purchasedItems.length - 1} món khác`;
+
+  try {
+    await apiFetch('/api/checkout/prepare-crypto', {
+      method: 'POST',
+      body: JSON.stringify({
+        items: purchasedItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          qty: item.qty || 1,
+          nft: !!item.nft,
+          warranty: item.warranty || null,
+        })),
+        cryptoAmount: Number(totalTestText),
+        tokenSymbol: 'TEST',
+        wallet: walletAddress,
+      }),
+    });
+  } catch (err) {
+    showToast(err.message || 'Khong the chuan bi don crypto', 'warn');
+    return;
+  }
+
+  closeModal('checkoutModal');
+  showToast(`🚀 Chuyển sang thanh toán Crypto ≈ ${totalTestText} TEST`);
+
+  setTimeout(() => {
+    window.location.href = `/Home/CryptoPayment?price=${totalTestText}&name=${encodeURIComponent(checkoutProductName)}`;
+  }, 700);
+
+  return;
+}
 
 
     const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
