@@ -25,5 +25,9 @@ namespace PC_dapp.Controllers
 
             return View(products);
         }
+        public IActionResult CryptoPayment()
+        {
+            return View();
+        }
     }
 }
