@@ -632,88 +632,121 @@
                                     showToast(`✅ Đăng nhập bằng ${provider} thành công!`);
 }
 
-                                    function doLogin() {
-  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-                                    const pw    = document.getElementById('loginPw').value;
-                                    let hasErr  = false;
-                                    if (!email || !/\S+@\S+/.test(email) && !/^\d{10}/.test(email)) {
-                                        document.getElementById('loginEmailErr').classList.add('show'); hasErr = true;
-  }
-                                    if (!pw) {document.getElementById('loginPwErr').classList.add('show'); hasErr = true; }
-                                    if (hasErr) return;
+async function doLogin() {
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const pw = document.getElementById('loginPw').value;
+    let hasErr = false;
 
-                                    const btn = document.getElementById('loginBtn');
-                                    btn.textContent = 'Đang đăng nhập...'; btn.classList.add('loading');
-
-  setTimeout(() => {
-                                        btn.textContent = 'Đăng nhập'; btn.classList.remove('loading');
-                                    const acc = DEMO_ACCOUNTS[email];
-                                    const registered = getRegisteredAccount(email);
-                                    if (acc && acc.pw === pw) {
-                                        closeAuthModal();
-                                    simulateLogin({...acc, email});
-                                    showToast(`👋 Chào mừng trở lại, ${acc.name.split(' ').pop()}!`);
-    } else if (acc) {
-                                        document.getElementById('loginPwErr').classList.add('show');
-    } else if (registered && registered.pw === pw) {
-                                        closeAuthModal();
-                                    const saved = getSavedAccountState(email);
-                                    simulateLogin({
-                                        name: saved?.profile?.name || email.split('@')[0],
-                                    avatar: saved?.profile?.avatar || email[0].toUpperCase(),
-                                    points: saved?.profile?.points || 100,
-                                    orders: saved?.profile?.orders || 0,
-                                    nfts: saved?.profile?.nfts || 0,
-                                    phone: saved?.profile?.phone || '',
-                                    email,
-      });
-                                    showToast('✅ Đăng nhập thành công!');
-    } else if (registered) {
-                                        document.getElementById('loginPwErr').classList.add('show');
-    } else {
-                                        document.getElementById('loginEmailErr').textContent = 'Tài khoản chưa tồn tại. Hãy đăng ký trước';
-                                    document.getElementById('loginEmailErr').classList.add('show');
+    if (!email || !/\S+@\S+/.test(email) && !/^\d{10}/.test(email)) {
+        document.getElementById('loginEmailErr').classList.add('show'); hasErr = true;
     }
-  }, 900);
+    if (!pw) { document.getElementById('loginPwErr').classList.add('show'); hasErr = true; }
+    if (hasErr) return;
+
+    const btn = document.getElementById('loginBtn');
+    btn.textContent = 'Đang đăng nhập...'; btn.classList.add('loading');
+
+    try {
+        // Bắn API thẳng xuống C# AuthController
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ Email: email, Password: pw })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            closeAuthModal();
+
+            // Nạp dữ liệu thật từ SQL Server vào giao diện
+            simulateLogin({
+                name: result.name,
+                email: result.email,
+                phone: result.phone,
+                avatar: result.avatar,
+                points: 100,
+                orders: 0,
+                nfts: 0
+            });
+
+            showToast(`👋 Chào mừng trở lại, ${result.name.split(' ').pop()}!`);
+        } else {
+            // Bắt lỗi từ Backend (Sai pass, sai email)
+            document.getElementById('loginPwErr').textContent = result.message || 'Lỗi đăng nhập';
+            document.getElementById('loginPwErr').classList.add('show');
+        }
+    } catch (error) {
+        console.error("Lỗi API:", error);
+        showToast('❌ Mất kết nối đến máy chủ Backend', 'warn');
+    } finally {
+        btn.textContent = 'Đăng nhập'; btn.classList.remove('loading');
+    }
 }
 
-                                    function doRegister() {
-  const first = document.getElementById('regFirst').value.trim();
-                                    const last  = document.getElementById('regLast').value.trim();
-                                    const email = document.getElementById('regEmail').value.trim().toLowerCase();
-                                    const phone = document.getElementById('regPhone').value.trim();
-                                    const pw    = document.getElementById('regPw').value;
-                                    const pw2   = document.getElementById('regPw2').value;
-                                    let hasErr  = false;
+async function doRegister() {
+    const first = document.getElementById('regFirst').value.trim();
+    const last = document.getElementById('regLast').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const phone = document.getElementById('regPhone').value.trim();
+    const pw = document.getElementById('regPw').value;
+    const pw2 = document.getElementById('regPw2').value;
+    let hasErr = false;
 
-                                    if (!email || !/\S+@\S+/.test(email)) {
-                                        document.getElementById('regEmailErr').classList.add('show'); hasErr = true;
-  }
-                                    if (DEMO_ACCOUNTS[email] || getRegisteredAccount(email)) {
-                                        document.getElementById('regEmailErr').textContent = 'Email đã tồn tại';
-                                    document.getElementById('regEmailErr').classList.add('show'); hasErr = true;
-  }
-                                    if (pw.length < 6) {
-                                        document.getElementById('regPw2Err').textContent = 'Mật khẩu cần ít nhất 6 ký tự';
-                                    document.getElementById('regPw2Err').classList.add('show'); hasErr = true;
-  }
-                                    if (pw !== pw2) {
-                                        document.getElementById('regPw2Err').textContent = 'Mật khẩu không khớp';
-                                    document.getElementById('regPw2Err').classList.add('show'); hasErr = true;
-  }
-                                    if (hasErr) return;
+    if (!email || !/\S+@\S+/.test(email)) {
+        document.getElementById('regEmailErr').classList.add('show'); hasErr = true;
+    }
+    if (pw.length < 6) {
+        document.getElementById('regPwErr').textContent = 'Mật khẩu cần ít nhất 6 ký tự';
+        document.getElementById('regPwErr').classList.add('show'); hasErr = true;
+    }
+    if (pw !== pw2) {
+        document.getElementById('regPw2Err').textContent = 'Mật khẩu không khớp';
+        document.getElementById('regPw2Err').classList.add('show'); hasErr = true;
+    }
+    if (hasErr) return;
 
-                                    const btn = document.getElementById('registerBtn');
-                                    btn.textContent = 'Đang tạo tài khoản...'; btn.classList.add('loading');
-  setTimeout(() => {
-                                        btn.textContent = 'Tạo tài khoản'; btn.classList.remove('loading');
-                                    closeAuthModal();
-                                    const fullName = (last + ' ' + first).trim() || email.split('@')[0];
-                                    saveRegisteredAccount({name: fullName, avatar: (last[0]||email[0]).toUpperCase(), points: 100, orders: 0, nfts: 0, phone, email }, pw);
-                                    simulateLogin({name: fullName, avatar: (last[0]||email[0]).toUpperCase(), points: 100, orders: 0, nfts: 0, phone, email });
-                                    showToast(`🎉 Đăng ký thành công! Chào mừng ${fullName}!`);
-    setTimeout(() => showToast('🎁 +100 điểm chào mừng đã được cộng vào tài khoản!'), 1200);
-  }, 1000);
+    const btn = document.getElementById('registerBtn');
+    btn.textContent = 'Đang tạo tài khoản...'; btn.classList.add('loading');
+
+    try {
+        // Bắn API đăng ký xuống C#
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                FirstName: first,
+                LastName: last,
+                Email: email,
+                Phone: phone,
+                Password: pw
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            closeAuthModal();
+            showToast(`🎉 ${result.message} Mời ngài đăng nhập!`);
+
+            // Tự động gán email vừa đăng ký sang form Login và mở lại Modal
+            document.getElementById('loginEmail').value = email;
+            document.getElementById('loginPw').value = ''; // Bắt nhập lại pass cho chắc
+            setTimeout(() => {
+                openAuthModal();
+                switchAuthTab('login');
+            }, 800);
+        } else {
+            // Hiện lỗi nếu trùng Email trong Database
+            document.getElementById('regEmailErr').textContent = result.message || 'Lỗi hệ thống';
+            document.getElementById('regEmailErr').classList.add('show');
+        }
+    } catch (error) {
+        console.error("Lỗi API:", error);
+        showToast('❌ Mất kết nối đến máy chủ Backend', 'warn');
+    } finally {
+        btn.textContent = 'Tạo tài khoản'; btn.classList.remove('loading');
+    }
 }
 
                                     /* ─── ACCOUNT PAGE ─── */
