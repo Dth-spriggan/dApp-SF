@@ -1,0 +1,24 @@
+﻿{
+  "name": "SilverFlag Warranty NFT #27",
+  "description": "NFT b\u1EA3o h\u00E0nh backend-generated cho \u0111\u01A1n h\u00E0ng #33 v\u00E0 s\u1EA3n ph\u1EA9m NVIDIA GeForce RTX 5090 32GB GDDR7 Founders Edition.",
+  "image": "ipfs://QmYwaAEEN4WC6wFkzWt8bfv1hH5XVyRuSydGKrws1cikN2",
+  "external_url": "",
+  "attributes": [
+    {
+      "trait_type": "Order ID",
+      "value": "#SF000033"
+    },
+    {
+      "trait_type": "Product",
+      "value": "NVIDIA GeForce RTX 5090 32GB GDDR7 Founders Edition"
+    },
+    {
+      "trait_type": "Warranty Until",
+      "value": "2028-04-24"
+    },
+    {
+      "trait_type": "Status",
+      "value": "MetadataReady"
+    }
+  ]
+}

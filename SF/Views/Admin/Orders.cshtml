@@ -1,0 +1,89 @@
+@model SF.Models.AdminOrdersPageViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Đơn hàng";
+    ViewData["Subtitle"] = "Kiểm tra thông tin mua hàng, địa chỉ snapshot và cập nhật trạng thái xử lý.";
+}
+
+<section class="admin-panel">
+    <div class="admin-section-head">
+        <div>
+            <h2>Danh sách đơn hàng</h2>
+            <p>Mỗi đơn lưu địa chỉ snapshot tại thời điểm khách đặt hàng.</p>
+        </div>
+    </div>
+
+    @if (Model.Orders.Count == 0)
+    {
+        <div class="admin-empty">Chưa có đơn hàng nào.</div>
+    }
+    else
+    {
+        @foreach (var order in Model.Orders)
+        {
+            <div class="admin-card">
+                <div class="admin-card-head">
+                    <div>
+                        <div class="admin-card-title">@( $"#SF{order.OrderId:D6}" )</div>
+                        <div class="admin-card-meta">@order.CreatedAt?.ToString("dd/MM/yyyy HH:mm") · @order.CustomerName · @order.CustomerEmail</div>
+                    </div>
+                    <span class="admin-pill">@order.Status</span>
+                </div>
+
+                <div class="admin-grid-2">
+                    <div class="admin-info">
+                        <strong>Người nhận:</strong> @(!string.IsNullOrWhiteSpace(order.RecipientName) ? order.RecipientName : "Chưa có dữ liệu")<br />
+                        <strong>SĐT:</strong> @(!string.IsNullOrWhiteSpace(order.RecipientPhone) ? order.RecipientPhone : "Chưa có dữ liệu")<br />
+                        <strong>Địa chỉ:</strong> @(!string.IsNullOrWhiteSpace(order.ShippingAddress) ? order.ShippingAddress : "Chưa có dữ liệu")<br />
+                        <strong>Email nhận hóa đơn:</strong> @(!string.IsNullOrWhiteSpace(order.ContactEmail) ? order.ContactEmail : "Chưa có dữ liệu")
+                    </div>
+                    <div class="admin-info">
+                        <strong>Thanh toán:</strong> @order.PaymentMethod<br />
+                        <strong>Tổng tiền:</strong> @order.TotalAmount.ToString("N0")đ<br />
+                        <strong>Ví:</strong> @(!string.IsNullOrWhiteSpace(order.Wallet) ? order.Wallet : "Không có")<br />
+                        <strong>Tx:</strong> @(!string.IsNullOrWhiteSpace(order.TxHash) ? order.TxHash : "Không có")
+                    </div>
+                </div>
+
+                <div class="admin-items">
+                    @foreach (var item in order.Items)
+                    {
+                        <div class="admin-item">
+                            <span>@item.ProductName @(!string.IsNullOrWhiteSpace(item.SerialNumber) ? $"· SN {item.SerialNumber}" : "")</span>
+                            <strong>@item.UnitPrice.ToString("N0")đ</strong>
+                        </div>
+                    }
+                </div>
+
+                <form method="post" action="/Admin/orders/status" class="admin-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="OrderId" value="@order.OrderId" />
+                    <div class="admin-field-grid">
+                        <div class="admin-field">
+                            <label>Trạng thái đơn</label>
+                            <select name="Status">
+                                @{
+                                    var statuses = new[] { "Processing", "Paid", "Shipping", "Completed", "Cancelled" };
+                                }
+                                @foreach (var status in statuses)
+                                {
+                                    if (string.Equals(order.Status, status, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <option selected="selected" value="@status">@status</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@status">@status</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="admin-actions">
+                        <button type="submit" class="admin-btn admin-btn-primary">Lưu trạng thái</button>
+                    </div>
+                </form>
+            </div>
+        }
+    }
+</section>

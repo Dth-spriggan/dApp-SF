@@ -1,0 +1,55 @@
+@model SF.Models.AdminUsersPageViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Tài khoản người dùng";
+    ViewData["Subtitle"] = "Theo dõi khách hàng, số đơn, NFT và địa chỉ mặc định hiện tại của từng tài khoản.";
+}
+
+<section class="admin-panel">
+    <div class="admin-section-head">
+        <div>
+            <h2>Danh sách người dùng</h2>
+            <p>Dữ liệu này tách riêng khỏi đơn hàng để tránh nhầm với địa chỉ snapshot của từng đơn.</p>
+        </div>
+    </div>
+
+    @if (Model.Users.Count == 0)
+    {
+        <div class="admin-empty">Chưa có tài khoản người dùng nào.</div>
+    }
+    else
+    {
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Người dùng</th>
+                        <th>Liên hệ</th>
+                        <th>Địa chỉ mặc định</th>
+                        <th>Đơn hàng</th>
+                        <th>NFT</th>
+                        <th>Tổng chi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td>@user.UserId</td>
+                            <td>
+                                <strong>@user.Name</strong><br />
+                                <span style="color:var(--text-3)">@user.Email</span>
+                            </td>
+                            <td>@(!string.IsNullOrWhiteSpace(user.PhoneNumber) ? user.PhoneNumber : "Chưa có")</td>
+                            <td>@(!string.IsNullOrWhiteSpace(user.DefaultAddress) ? user.DefaultAddress : "Chưa có")</td>
+                            <td>@user.OrderCount</td>
+                            <td>@user.NftCount</td>
+                            <td>@user.TotalSpent.ToString("N0")đ</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

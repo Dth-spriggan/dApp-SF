@@ -1,0 +1,36 @@
+﻿{
+  "name": "SilverFlag Warranty NFT #33",
+  "description": "NFT b\u1EA3o h\u00E0nh backend-generated cho \u0111\u01A1n h\u00E0ng #39 v\u00E0 s\u1EA3n ph\u1EA9m G.Skill Trident Z5 RGB DDR5-7200 CL34 64GB (2x32GB).",
+  "image": "ipfs://QmeoDg24rPGu4CkT3X8GwX4i5cDXQkkxtN8GM1CL5qQWGw",
+  "external_url": "",
+  "attributes": [
+    {
+      "trait_type": "Order ID",
+      "value": "#SF000039"
+    },
+    {
+      "trait_type": "Product",
+      "value": "G.Skill Trident Z5 RGB DDR5-7200 CL34 64GB (2x32GB)"
+    },
+    {
+      "trait_type": "Product Price",
+      "value": "8,900,000 VND"
+    },
+    {
+      "trait_type": "Purchase Date",
+      "value": "2026-05-06"
+    },
+    {
+      "trait_type": "Expiry Date",
+      "value": "2028-05-06"
+    },
+    {
+      "trait_type": "Warranty Until",
+      "value": "2028-05-06"
+    },
+    {
+      "trait_type": "Status",
+      "value": "MetadataReady"
+    }
+  ]
+}

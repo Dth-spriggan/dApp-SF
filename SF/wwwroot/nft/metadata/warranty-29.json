@@ -1,0 +1,24 @@
+﻿{
+  "name": "SilverFlag Warranty NFT #29",
+  "description": "NFT b\u1EA3o h\u00E0nh backend-generated cho \u0111\u01A1n h\u00E0ng #35 v\u00E0 s\u1EA3n ph\u1EA9m ASUS ROG Maximus Z790 Apex Encore DDR5 Wi-Fi 7.",
+  "image": "ipfs://QmdoRA81pKnD8fHZcCWNf3ceTSQj3L7iDtPmU5uAgUsm68",
+  "external_url": "",
+  "attributes": [
+    {
+      "trait_type": "Order ID",
+      "value": "#SF000035"
+    },
+    {
+      "trait_type": "Product",
+      "value": "ASUS ROG Maximus Z790 Apex Encore DDR5 Wi-Fi 7"
+    },
+    {
+      "trait_type": "Warranty Until",
+      "value": "2028-05-06"
+    },
+    {
+      "trait_type": "Status",
+      "value": "MetadataReady"
+    }
+  ]
+}

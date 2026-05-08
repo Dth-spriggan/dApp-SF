@@ -1,0 +1,630 @@
+@{
+    Layout = null;
+    var returnUrl = Url.Action("Index", "Home") ?? "/";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán Crypto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/demo3_4_enhanced.css" asp-append-version="true" />
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top right, rgba(21,101,192,.10), transparent 24%),
+                linear-gradient(180deg, #fff5f5 0%, #f4f7fb 100%);
+        }
+
+        .cp-shell {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cp-topbar {
+            background: linear-gradient(90deg, var(--red-dark), var(--red));
+            color: #fff;
+            padding: 16px 0;
+            box-shadow: 0 10px 30px rgba(229,57,53,.20);
+        }
+
+        .cp-topbar-inner,
+        .cp-wrap {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        .cp-topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .cp-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .cp-brand strong {
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        .cp-brand span {
+            font-size: 12px;
+            opacity: .8;
+        }
+
+        .cp-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.14);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .cp-wrap {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) 360px;
+            gap: 24px;
+            padding: 28px 0 40px;
+        }
+
+        .cp-panel,
+        .cp-summary,
+        .cp-step,
+        .cp-status-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .cp-panel {
+            padding: 24px;
+        }
+
+        .cp-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: flex-start;
+            margin-bottom: 22px;
+        }
+
+        .cp-title {
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.15;
+        }
+
+        .cp-sub {
+            margin-top: 8px;
+            color: var(--text-2);
+            max-width: 640px;
+        }
+
+        .cp-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: var(--blue-light);
+            color: var(--blue);
+            font-weight: 700;
+        }
+
+        .cp-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .cp-status-card,
+        .cp-step {
+            padding: 18px;
+        }
+
+        .cp-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--text-3);
+            margin-bottom: 8px;
+        }
+
+        .cp-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .cp-mono {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            word-break: break-word;
+        }
+
+        .cp-wallet {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+            color: var(--text-2);
+        }
+
+        .cp-wallet-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-3);
+        }
+
+        .cp-wallet.connected .cp-wallet-dot {
+            background: var(--green);
+            box-shadow: 0 0 0 6px rgba(46,125,50,.12);
+        }
+
+        .cp-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 22px 0 18px;
+        }
+
+        .cp-btn {
+            min-height: 46px;
+            padding: 0 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            transition: .2s ease;
+        }
+
+        .cp-btn-primary {
+            background: linear-gradient(90deg, var(--red), var(--red-dark));
+            color: #fff;
+        }
+
+        .cp-btn-primary:hover { filter: brightness(.96); }
+
+        .cp-btn-secondary {
+            background: #fff;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .cp-btn:disabled {
+            opacity: .65;
+            cursor: not-allowed;
+        }
+
+        .cp-steps {
+            display: grid;
+            gap: 14px;
+        }
+
+        .cp-step-top {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .cp-step-no {
+            width: 34px;
+            height: 34px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--red-light);
+            color: var(--red);
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .cp-step-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .cp-step-desc {
+            margin-top: 4px;
+            color: var(--text-2);
+        }
+
+        .cp-summary {
+            padding: 22px;
+            align-self: start;
+            position: sticky;
+            top: 24px;
+        }
+
+        .cp-summary-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+
+        .cp-summary-card {
+            padding: 16px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #fff7f7 0%, #f6f8fc 100%);
+            border: 1px solid #f1d7d7;
+        }
+
+        .cp-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 0;
+            color: var(--text-2);
+            border-bottom: 1px dashed #eadbdb;
+        }
+
+        .cp-row:last-child {
+            border-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .cp-row strong {
+            color: var(--text);
+        }
+
+        .cp-row-total {
+            margin-top: 10px;
+            padding-top: 14px;
+            border-top: 2px solid #ecd6d6;
+            font-size: 17px;
+        }
+
+        .cp-status {
+            margin-top: 18px;
+            min-height: 54px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: #fffaf1;
+            border: 1px solid #f4deb0;
+            color: #8a5b00;
+            font-weight: 600;
+            line-height: 1.55;
+        }
+
+        .cp-status.ok {
+            background: #edf9f0;
+            border-color: #cfe9d5;
+            color: var(--green);
+        }
+
+        .cp-status.error {
+            background: #fff1f1;
+            border-color: #f1c3c3;
+            color: var(--red-dark);
+        }
+
+        .cp-hint {
+            margin-top: 14px;
+            color: var(--text-3);
+            font-size: 13px;
+        }
+
+        @@media (max-width: 980px) {
+            .cp-wrap {
+                grid-template-columns: 1fr;
+            }
+
+            .cp-summary {
+                position: static;
+            }
+
+            .cp-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cp-shell">
+        <div class="cp-topbar">
+            <div class="cp-topbar-inner">
+                <div class="cp-brand">
+                    <strong>Silver Flag</strong>
+                    <span>Thanh toán crypto trên Oasis Sapphire Testnet</span>
+                </div>
+                <a class="cp-back" href="@returnUrl">← Quay lại trang chủ</a>
+            </div>
+        </div>
+
+        <div class="cp-wrap">
+            <section class="cp-panel">
+                <div class="cp-head">
+                    <div>
+                        <div class="cp-title">Thanh toán bằng MetaMask</div>
+                        <div class="cp-sub">Kết nối ví, chuyển sang đúng mạng Oasis Sapphire Testnet, xác nhận giao dịch và hệ thống sẽ tự ghi nhận đơn hàng crypto của bạn.</div>
+                    </div>
+                    <div class="cp-badge">◈ TEST token</div>
+                </div>
+
+                <div class="cp-grid">
+                    <div class="cp-status-card">
+                        <div class="cp-label">Ví hiện tại</div>
+                        <div id="accountText" class="cp-value">Chưa kết nối</div>
+                        <div id="walletState" class="cp-wallet">
+                            <span class="cp-wallet-dot"></span>
+                            <span id="walletStateText">MetaMask chưa được kết nối</span>
+                        </div>
+                    </div>
+
+                    <div class="cp-status-card">
+                        <div class="cp-label">Mạng yêu cầu</div>
+                        <div class="cp-value">Oasis Sapphire Testnet</div>
+                        <div class="cp-hint">Chain ID: <span class="cp-mono">0x5aff</span></div>
+                    </div>
+                </div>
+
+                <div class="cp-actions">
+                    <button id="connectBtn" type="button" class="cp-btn cp-btn-secondary" onclick="connectWallet()">Kết nối MetaMask</button>
+                    <button id="payBtn" type="button" class="cp-btn cp-btn-primary" onclick="pay()">Thanh toán ngay</button>
+                </div>
+
+                <div class="cp-steps">
+                    <div class="cp-step">
+                        <div class="cp-step-top">
+                            <div class="cp-step-no">1</div>
+                            <div>
+                                <div class="cp-step-title">Kết nối ví</div>
+                                <div class="cp-step-desc">Bấm “Kết nối MetaMask”. Trang sẽ tự yêu cầu chuyển đúng sang Oasis Sapphire Testnet nếu ví của bạn đang ở mạng khác.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cp-step">
+                        <div class="cp-step-top">
+                            <div class="cp-step-no">2</div>
+                            <div>
+                                <div class="cp-step-title">Xác nhận giao dịch</div>
+                                <div class="cp-step-desc">Bấm “Thanh toán ngay”, kiểm tra số lượng token TEST và xác nhận giao dịch trực tiếp trong MetaMask.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cp-step">
+                        <div class="cp-step-top">
+                            <div class="cp-step-no">3</div>
+                            <div>
+                                <div class="cp-step-title">Đồng bộ đơn hàng</div>
+                                <div class="cp-step-desc">Sau khi giao dịch thành công, hệ thống sẽ gọi API hoàn tất thanh toán crypto và đưa bạn về trang chủ.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="status" class="cp-status">Sẵn sàng thanh toán. Hãy kết nối ví để bắt đầu.</div>
+                <div id="txHint" class="cp-hint"></div>
+            </section>
+
+            <aside class="cp-summary">
+                <div class="cp-summary-title">Tóm tắt đơn crypto</div>
+                <div class="cp-summary-card">
+                    <div class="cp-row">
+                        <span>Sản phẩm</span>
+                        <strong id="product">Đang tải...</strong>
+                    </div>
+                    <div class="cp-row">
+                        <span>Token</span>
+                        <strong>TEST</strong>
+                    </div>
+                    <div class="cp-row">
+                        <span>Smart contract</span>
+                        <strong class="cp-mono" id="contractShort"></strong>
+                    </div>
+                    <div class="cp-row cp-row-total">
+                        <span>Tổng thanh toán</span>
+                        <strong id="price">0 TEST</strong>
+                    </div>
+                </div>
+                <div class="cp-hint">Lưu ý: đây là flow testnet để mô phỏng thanh toán on-chain và mint NFT bảo hành sau khi đơn hàng được xác nhận.</div>
+            </aside>
+        </div>
+    </div>
+
+<script>
+const returnUrl = "@returnUrl";
+const contractAddress = "0xdc251d82647e3FA2c4D5200eCcd3622b85d61263";
+const sapphireTestnet = {
+  chainId: "0x5aff",
+  chainName: "Oasis Sapphire Testnet",
+  nativeCurrency: {
+    name: "TEST",
+    symbol: "TEST",
+    decimals: 18
+  },
+  rpcUrls: ["https://testnet.sapphire.oasis.dev"],
+  blockExplorerUrls: ["https://explorer.oasis.io/testnet/sapphire"]
+};
+
+const abi = [
+  "function deposit(uint256 orderId) payable",
+  "function getOrder(uint256 orderId) view returns (address buyer, address seller, uint256 amount, uint8 status)"
+];
+
+let provider = null;
+let signer = null;
+let contract = null;
+let productName = "";
+let productPrice = "0";
+
+const params = new URLSearchParams(window.location.search);
+productName = params.get("name") || "Đơn hàng crypto";
+productPrice = params.get("price") || "0";
+
+document.getElementById("product").innerText = productName;
+document.getElementById("price").innerText = productPrice + " TEST";
+document.getElementById("contractShort").innerText = shortenHash(contractAddress);
+
+function shortenHash(value) {
+  if (!value || value.length < 14) return value || "";
+  return `${value.slice(0, 8)}...${value.slice(-6)}`;
+}
+
+function setStatus(message, kind = "") {
+  const el = document.getElementById("status");
+  el.textContent = message;
+  el.className = "cp-status" + (kind ? ` ${kind}` : "");
+}
+
+function setWalletUi(address) {
+  const walletState = document.getElementById("walletState");
+  const accountText = document.getElementById("accountText");
+  const walletStateText = document.getElementById("walletStateText");
+  const connectBtn = document.getElementById("connectBtn");
+
+  if (address) {
+    walletState.classList.add("connected");
+    accountText.textContent = shortenHash(address);
+    walletStateText.textContent = "Ví đã kết nối và sẵn sàng ký giao dịch";
+    connectBtn.textContent = "Đã kết nối MetaMask";
+  } else {
+    walletState.classList.remove("connected");
+    accountText.textContent = "Chưa kết nối";
+    walletStateText.textContent = "MetaMask chưa được kết nối";
+    connectBtn.textContent = "Kết nối MetaMask";
+  }
+}
+
+async function ensureSapphireNetwork() {
+  const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
+  if (currentChainId === sapphireTestnet.chainId) {
+    return;
+  }
+
+  try {
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: sapphireTestnet.chainId }]
+    });
+  } catch (error) {
+    if (error.code === 4902) {
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [sapphireTestnet]
+      });
+      return;
+    }
+
+    throw error;
+  }
+}
+
+async function connectWallet() {
+  if (typeof window.ethereum === "undefined") {
+    setStatus("Không tìm thấy MetaMask trong trình duyệt hiện tại. Hãy cài extension rồi tải lại trang.", "error");
+    return;
+  }
+
+  try {
+    setStatus("Đang kết nối MetaMask và kiểm tra mạng Sapphire testnet...");
+    await ensureSapphireNetwork();
+    provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+
+    signer = await provider.getSigner();
+    contract = new ethers.Contract(contractAddress, abi, signer);
+
+    const address = await signer.getAddress();
+    setWalletUi(address);
+    setStatus("Đã kết nối ví thành công. Bạn có thể xác nhận thanh toán.", "ok");
+  } catch (err) {
+    console.error(err);
+    setWalletUi("");
+    setStatus("Không thể kết nối đúng mạng Oasis Sapphire Testnet. Hãy thử lại hoặc kiểm tra MetaMask.", "error");
+  }
+}
+
+async function pay() {
+  if (!contract || !signer) {
+    setStatus("Vui lòng kết nối MetaMask trước khi thanh toán.", "error");
+    return;
+  }
+
+  const payBtn = document.getElementById("payBtn");
+  const txHint = document.getElementById("txHint");
+
+  try {
+    payBtn.disabled = true;
+    payBtn.textContent = "Đang xử lý...";
+    setStatus("Đang tạo giao dịch on-chain. Vui lòng xác nhận trong MetaMask...");
+    txHint.textContent = "";
+
+    const value = ethers.parseEther(productPrice);
+    const chainOrderId = BigInt(Date.now());
+    const txRequest = await contract.deposit.populateTransaction(chainOrderId, { value });
+
+    const tx = await signer.sendTransaction({
+      to: contractAddress,
+      data: txRequest.data,
+      value
+    });
+
+    txHint.textContent = `Tx hash: ${tx.hash}`;
+    setStatus("Giao dịch đã gửi. Đang chờ xác nhận block...", "");
+
+    await tx.wait();
+
+    const response = await fetch('/api/checkout/complete-crypto', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        txHash: tx.hash,
+        wallet: await signer.getAddress()
+      })
+    });
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null);
+      throw new Error(payload?.message || 'Không thể đồng bộ đơn hàng sau thanh toán crypto.');
+    }
+
+    setStatus("Thanh toán thành công. Hệ thống đang đưa bạn quay về trang chủ...", "ok");
+
+    setTimeout(() => {
+      window.location.href = `${returnUrl}?paid=1&method=crypto`;
+    }, 1500);
+  } catch (e) {
+    console.error(e);
+    const message = e?.info?.error?.message || e?.shortMessage || e?.message || "Thanh toán thất bại";
+
+    if (message.includes("too many errors")) {
+      setStatus("RPC của MetaMask đang lỗi hoặc quá tải. Hãy thử lại sau hoặc đổi RPC Sapphire testnet trong MetaMask.", "error");
+    } else {
+      setStatus(message, "error");
+    }
+  } finally {
+    payBtn.disabled = false;
+    payBtn.textContent = "Thanh toán ngay";
+  }
+}
+</script>
+</body>
+</html>

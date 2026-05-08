@@ -1,0 +1,87 @@
+@{
+    ViewData["Title"] = "Tất cả sản phẩm";
+}
+
+<div class="main" id="allProductsPage" data-force-show-all="true">
+  <div class="section-card" id="featuredProductsSection">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="section-icon">🧩</span>
+        <span class="section-title">TẤT CẢ SẢN PHẨM</span>
+        <div class="section-tabs">
+          <div class="sec-tab active" onclick="setTab(this)">Tất cả</div>
+          <div class="sec-tab" onclick="setTab(this)">GPU</div>
+          <div class="sec-tab" onclick="setTab(this)">CPU</div>
+          <div class="sec-tab" onclick="setTab(this)">RAM</div>
+          <div class="sec-tab" onclick="setTab(this)">SSD</div>
+        </div>
+      </div>
+      <span class="see-all" id="catalogSeeAllBtn" onclick="window.location.href='@Url.Action("Index", "Home")'">Về trang chủ ›</span>
+    </div>
+
+    <div class="catalog-toolbar">
+      <div class="catalog-summary">Đang hiển thị <strong id="catalogResultCount">0</strong> sản phẩm phù hợp</div>
+      <div class="catalog-tools">
+        <button class="catalog-chip" id="filterNftBtn" onclick="toggleCatalogFlag('nft')">◈ Chỉ NFT</button>
+        <button class="catalog-chip" id="filterSaleBtn" onclick="toggleCatalogFlag('sale')">🏷️ Đang giảm giá</button>
+        <select class="catalog-sort" id="catalogSort" onchange="changeCatalogSort(this.value)">
+          <option value="featured">Nổi bật</option>
+          <option value="price-asc">Giá tăng dần</option>
+          <option value="price-desc">Giá giảm dần</option>
+          <option value="name-asc">Tên A-Z</option>
+        </select>
+        <button class="catalog-reset" onclick="resetCatalogFilters()">Xóa bộ lọc</button>
+      </div>
+    </div>
+
+    <div class="product-grid" id="featuredProductGrid"></div>
+    <div class="catalog-empty" id="catalogEmptyState">
+      <div class="catalog-empty-icon">🔎</div>
+      <div class="catalog-empty-title">Không có sản phẩm phù hợp</div>
+      <div class="catalog-empty-sub">Thử thay đổi bộ lọc hoặc từ khóa để xem toàn bộ dữ liệu sản phẩm trong database.</div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+<script src="~/js/demo3_4_enhanced.js" asp-append-version="true"></script>
+<script>
+  (function () {
+    function isPlaceholder(value) {
+      const text = (value || '').trim().toLowerCase();
+      return !text || text === 'đang cập nhật' || text === 'không có dữ liệu';
+    }
+
+    function normalizeNftCards() {
+      document.querySelectorAll('#accNftGrid .acc-nft-card').forEach(card => {
+        const infoEl = card.querySelector('.acc-nft-info');
+        if (!infoEl) return;
+
+        const text = (infoEl.textContent || '').trim();
+        const match = text.match(/(\d{2}\/\d{2}\/\d{4})/);
+        const values = card.querySelectorAll('.acc-nft-order-value');
+        if (values.length < 4) return;
+
+        if (match && isPlaceholder(values[3].textContent)) {
+          values[3].textContent = match[1];
+        }
+
+        if (/^hsd\s*:/i.test(text) || /^hạn sử dụng\s*:/i.test(text)) {
+          infoEl.style.display = 'none';
+        }
+      });
+    }
+
+    const observer = new MutationObserver(normalizeNftCards);
+    document.addEventListener('DOMContentLoaded', function () {
+      const grid = document.getElementById('accNftGrid');
+      if (grid) {
+        observer.observe(grid, { childList: true, subtree: true });
+      }
+      normalizeNftCards();
+      setTimeout(normalizeNftCards, 300);
+      setTimeout(normalizeNftCards, 1200);
+    });
+  })();
+</script>
+}

@@ -1,0 +1,24 @@
+﻿{
+  "name": "SilverFlag Warranty NFT #32",
+  "description": "NFT b\u1EA3o h\u00E0nh backend-generated cho \u0111\u01A1n h\u00E0ng #38 v\u00E0 s\u1EA3n ph\u1EA9m AMD Ryzen 9 7950X3D 16-Core 3D V-Cache Socket AM5.",
+  "image": "ipfs://QmeNnd21AobRBMVwP3B5Kwy5Eher8TFN79VXigFaRHZaKe",
+  "external_url": "",
+  "attributes": [
+    {
+      "trait_type": "Order ID",
+      "value": "#SF000038"
+    },
+    {
+      "trait_type": "Product",
+      "value": "AMD Ryzen 9 7950X3D 16-Core 3D V-Cache Socket AM5"
+    },
+    {
+      "trait_type": "Warranty Until",
+      "value": "2028-05-06"
+    },
+    {
+      "trait_type": "Status",
+      "value": "MetadataReady"
+    }
+  ]
+}

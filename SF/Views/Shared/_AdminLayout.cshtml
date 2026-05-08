@@ -1,0 +1,89 @@
+@model SF.Models.AdminPageViewModel
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - SF Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/demo3_4_enhanced.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body class="admin-page">
+    <div class="admin-shell">
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                <div class="admin-brand-mark">SF</div>
+                <div>
+                    <strong>Silver Flag</strong>
+                    <span>Admin dashboard</span>
+                </div>
+            </div>
+
+            <nav class="admin-nav">
+                <a href="/Admin" class="@(Model.ActivePage == "dashboard" ? "active" : "")">
+                    <span class="admin-nav-icon">◔</span>
+                    <span>Tổng quan</span>
+                </a>
+                <a href="/Admin/Products" class="@(Model.ActivePage == "products" ? "active" : "")">
+                    <span class="admin-nav-icon">👥</span>
+                    <span>Sản phẩm</span>
+                </a>
+                <a href="/Admin/Orders" class="@(Model.ActivePage == "orders" ? "active" : "")">
+                    <span class="admin-nav-icon">🏢</span>
+                    <span>Đơn hàng</span>
+                </a>
+                <a href="/Admin/Users" class="@(Model.ActivePage == "users" ? "active" : "")">
+                    <span class="admin-nav-icon">💼</span>
+                    <span>Tài khoản người dùng</span>
+                </a>
+            </nav>
+
+            <form method="post" action="/Admin/logout" class="admin-logout-form">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="admin-nav admin-logout-btn">
+                    <span class="admin-nav-icon">↩</span>
+                    <span>Đăng xuất admin</span>
+                </button>
+            </form>
+        </aside>
+
+        <main class="admin-main">
+            <div class="admin-topbar">
+                <div>
+                    <h1>@ViewData["Title"]</h1>
+                    <p>@ViewData["Subtitle"]</p>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Message))
+            {
+                <div class="admin-message">@Model.Message</div>
+            }
+
+            <section class="admin-stats">
+                <div class="admin-stat">
+                    <div class="admin-stat-label">Đơn hàng</div>
+                    <div class="admin-stat-value">@Model.TotalOrders</div>
+                </div>
+                <div class="admin-stat">
+                    <div class="admin-stat-label">Sản phẩm</div>
+                    <div class="admin-stat-value">@Model.TotalProducts</div>
+                </div>
+                <div class="admin-stat">
+                    <div class="admin-stat-label">Khách hàng</div>
+                    <div class="admin-stat-value">@Model.TotalCustomers</div>
+                </div>
+                <div class="admin-stat">
+                    <div class="admin-stat-label">Doanh thu</div>
+                    <div class="admin-stat-value">@Model.Revenue.ToString("N0")đ</div>
+                </div>
+            </section>
+
+            @RenderBody()
+        </main>
+    </div>
+</body>
+</html>

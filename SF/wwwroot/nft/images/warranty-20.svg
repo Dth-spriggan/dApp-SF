@@ -1,0 +1,25 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1200" fill="url(#bg)"/>
+  <circle cx="970" cy="180" r="140" fill="#22c55e" opacity="0.18"/>
+  <circle cx="220" cy="1010" r="200" fill="#a78bfa" opacity="0.16"/>
+  <rect x="110" y="140" width="980" height="920" rx="42" fill="url(#card)"/>
+  <rect x="160" y="190" width="880" height="820" rx="30" fill="#0f172a"/>
+  <text x="220" y="300" fill="#f8fafc" font-size="48" font-family="Arial, sans-serif" font-weight="700">SilverFlag Warranty NFT</text>
+  <text x="220" y="380" fill="#93c5fd" font-size="34" font-family="Arial, sans-serif">ASUS ROG Maximus Z890 Hero</text>
+  <text x="220" y="470" fill="#cbd5e1" font-size="28" font-family="Arial, sans-serif">Order: #SF000026</text>
+  <text x="220" y="530" fill="#cbd5e1" font-size="28" font-family="Arial, sans-serif">Token: #20</text>
+  <text x="220" y="590" fill="#cbd5e1" font-size="28" font-family="Arial, sans-serif">Warranty Until: 23, 04, 2028</text>
+  <rect x="220" y="680" width="520" height="140" rx="22" fill="#1d4ed8"/>
+  <text x="260" y="760" fill="#ffffff" font-size="42" font-family="Arial, sans-serif" font-weight="700">BACKEND GENERATED</text>
+  <text x="220" y="910" fill="#94a3b8" font-size="24" font-family="Arial, sans-serif">Metadata minted off-chain first. Ready for IPFS / on-chain mint later.</text>
+</svg>

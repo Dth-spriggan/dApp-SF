@@ -1,0 +1,79 @@
+@model SF.Models.AdminDashboardViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Tổng quan";
+    ViewData["Subtitle"] = "Theo dõi nhanh tình hình vận hành, đơn mới và sản phẩm cần chú ý.";
+}
+
+<section class="admin-panel">
+    <div class="admin-section-head">
+        <div>
+            <h2>Đơn hàng gần đây</h2>
+            <p>5 đơn hàng mới nhất để theo dõi xử lý.</p>
+        </div>
+        <a href="/Admin/Orders" class="admin-btn admin-btn-secondary">Xem tất cả đơn hàng</a>
+    </div>
+
+    @if (Model.RecentOrders.Count == 0)
+    {
+        <div class="admin-empty">Chưa có đơn hàng nào.</div>
+    }
+    else
+    {
+        <div class="admin-dashboard-grid">
+            @foreach (var order in Model.RecentOrders)
+            {
+                <div class="admin-card">
+                    <div class="admin-card-head">
+                        <div>
+                            <div class="admin-card-title">@( $"#SF{order.OrderId:D6}" )</div>
+                            <div class="admin-card-meta">@order.CreatedAt?.ToString("dd/MM/yyyy HH:mm") · @order.CustomerName</div>
+                        </div>
+                        <span class="admin-pill">@order.Status</span>
+                    </div>
+                    <div class="admin-info">
+                        <strong>Người nhận:</strong> @order.RecipientName<br />
+                        <strong>Địa chỉ:</strong> @order.ShippingAddress<br />
+                        <strong>Tổng tiền:</strong> @order.TotalAmount.ToString("N0")đ
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+<section class="admin-panel" style="margin-top:20px">
+    <div class="admin-section-head">
+        <div>
+            <h2>Sản phẩm sắp hết hàng</h2>
+            <p>Những sản phẩm tồn kho thấp cần nhập thêm hoặc điều chỉnh trạng thái bán.</p>
+        </div>
+        <a href="/Admin/Products" class="admin-btn admin-btn-secondary">Quản lý sản phẩm</a>
+    </div>
+
+    @if (Model.LowStockProducts.Count == 0)
+    {
+        <div class="admin-empty">Không có sản phẩm nào dưới ngưỡng cảnh báo.</div>
+    }
+    else
+    {
+        <div class="admin-products-grid">
+            @foreach (var product in Model.LowStockProducts)
+            {
+                <div class="admin-card">
+                    <div class="admin-card-head">
+                        <div>
+                            <div class="admin-card-title">@( $"#P{product.ProductId:D4}" ) - @product.Name</div>
+                            <div class="admin-card-meta">@product.CategoryName</div>
+                        </div>
+                    </div>
+                    <div class="admin-info">
+                        <strong>Tồn kho:</strong> @product.Stock<br />
+                        <strong>Giá:</strong> @product.PriceVnd.ToString("N0")đ<br />
+                        <strong>Bảo hành NFT:</strong> @(product.NftWarrantyEnabled ? $"{product.WarrantyMonths} tháng" : "Không bật")
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</section>

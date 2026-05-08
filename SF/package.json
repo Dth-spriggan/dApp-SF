@@ -1,0 +1,11 @@
+{
+  "name": "sf-sapphire-worker",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0",
+    "@oasisprotocol/sapphire-ethers-v6": "^6.0.1",
+    "ethers": "^6.15.0",
+    "solc": "^0.8.30"
+  }
+}

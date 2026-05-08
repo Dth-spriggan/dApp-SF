@@ -1,0 +1,346 @@
+@{
+    ViewData["Title"] = "SilverFlag PC";
+}
+
+<div class="main">
+
+  <!-- QUICK CATEGORIES -->
+  <div class="quick-cats">
+    <div class="qcat" onclick="handleQuickCategory('cpu-main')">
+      <div class="qcat-icon">⚡</div>
+      <div class="qcat-name">CPU &<br>Mainboard</div>
+    </div>
+    <div class="qcat" onclick="handleQuickCategory('gpu')">
+      <div class="qcat-icon">🖼️</div>
+      <div class="qcat-name">Card<br>Đồ Họa</div>
+    </div>
+    <div class="qcat" onclick="handleQuickCategory('ram-ssd')">
+      <div class="qcat-icon">💾</div>
+      <div class="qcat-name">RAM<br>& SSD</div>
+    </div>
+    <div class="qcat" onclick="handleQuickCategory('monitor')">
+      <div class="qcat-icon">🖥️</div>
+      <div class="qcat-name">Màn<br>Hình</div>
+    </div>
+    <div class="qcat" onclick="handleQuickCategory('case-psu')">
+      <div class="qcat-icon">🏗️</div>
+      <div class="qcat-name">Case<br>& PSU</div>
+    </div>
+    <div class="qcat" onclick="handleQuickCategory('cooling')">
+      <div class="qcat-icon">❄️</div>
+      <div class="qcat-name">Tản<br>Nhiệt</div>
+    </div>
+    <div class="qcat" onclick="handleQuickCategory('peripheral')">
+      <div class="qcat-icon">🖱️</div>
+      <div class="qcat-name">Ngoại<br>Vi</div>
+    </div>
+    <div class="qcat" onclick="handleQuickCategory('gaming-pc')">
+      <div class="qcat-icon">🎮</div>
+      <div class="qcat-name">PC<br>Gaming</div>
+    </div>
+  </div>
+
+  <!-- BANNER + SIDEBAR LAYOUT -->
+  <div class="top-layout">
+    <!-- Banner Area -->
+    <div class="banner-area">
+      <div class="banner-main">
+        <div class="banner-text">
+          <div class="banner-tag">🔥 SIÊU KHUYẾN MÃI</div>
+          <div class="banner-title">NVIDIA<br>RTX 5090</div>
+          <div class="banner-sub">Kiến trúc Blackwell — Hiệu năng đột phá</div>
+          <div class="banner-price">Từ 54.900.000đ</div>
+          <div class="banner-cta" onclick="showToast('Đang xem RTX 5090 Series')">Mua ngay →</div>
+        </div>
+        <div class="banner-visual">
+          <img src="~/banners/hero-rtx5090.png" alt="RTX 5090 hero banner" loading="lazy">
+        </div>
+      </div>
+      <div class="banner-subs">
+        <div class="banner-sub-card" style="background:linear-gradient(135deg,#b71c1c,#e53935)" onclick="showToast('AMD Ryzen 9000 Series')">
+          <div class="bsc-icon"><img src="~/banners/amd.png" alt="AMD Ryzen banner" loading="lazy"></div>
+          <div class="bsc-text">
+            <div class="bsc-label">MỚI RA MẮT</div>
+            <div class="bsc-title">AMD Ryzen 9 9950X</div>
+            <div class="bsc-price">Từ 22.500.000đ</div>
+          </div>
+        </div>
+        <div class="banner-sub-card" style="background:linear-gradient(135deg,#1b5e20,#388e3c)" onclick="showToast('G.Skill DDR5 Flash Sale')">
+          <div class="bsc-icon"><img src="assets/images/banners/banner-ddr5-sale.svg" alt="DDR5 sale banner" loading="lazy"></div>
+          <div class="bsc-text">
+            <div class="bsc-label">⚡ FLASH SALE</div>
+            <div class="bsc-title">RAM DDR5-7200 64GB</div>
+            <div class="bsc-price">Chỉ 6.900.000đ</div>
+          </div>
+        </div>
+        <div class="banner-sub-card" style="background:linear-gradient(135deg,#4a148c,#7b1fa2)" onclick="showToast('Thanh toán Crypto giảm thêm 5%')">
+          <div class="bsc-icon"><img src="~/banners/metamask.png" alt="Crypto payment banner" loading="lazy"></div>
+          <div class="bsc-text">
+            <div class="bsc-label">WEB3 ƯU ĐÃI</div>
+            <div class="bsc-title">Thanh toán Crypto</div>
+            <div class="bsc-price">Giảm thêm 5%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="right-sidebar">
+      <!-- Wallet Panel -->
+      <div class="wallet-panel">
+        <div class="wallet-panel-head">◈ Web3 Wallet</div>
+        <div class="wallet-panel-body">
+          <div class="wallet-status">
+            <span class="ws-dot" id="wsDot"></span>
+            <span id="wsText">Chưa kết nối ví</span>
+          </div>
+          <button class="connect-mini-btn" id="connectMiniBtn" onclick="openWalletModal()">Kết nối ví →</button>
+          <div class="crypto-rates">
+            <div class="rate-item">
+              <span class="rate-name">⟠ TEST</span>
+              <span class="rate-val rate-up">$3,891 ▲</span>
+            </div>
+            <div class="rate-item">
+              <span class="rate-name">₿ BTC</span>
+              <span class="rate-val rate-up">$67,234 ▲</span>
+            </div>
+            <div class="rate-item">
+              <span class="rate-name">◎ SOL</span>
+              <span class="rate-val rate-down">$189 ▼</span>
+            </div>
+            <div class="rate-item">
+              <span class="rate-name">💲 USDT</span>
+              <span class="rate-val">$1.00 –</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flash Sale Panel -->
+      <div class="flash-panel">
+        <div class="flash-head">
+          ⚡ FLASH SALE
+          <span class="flash-timer" id="flashTimer">05:47:23</span>
+        </div>
+        <div class="flash-item" onclick="openQuickView('p5', event)">
+          <div class="flash-item-name">Samsung 990 Pro 2TB PCIe 5.0</div>
+          <div class="flash-item-prices">
+            <span class="flash-price">3.890.000đ</span>
+            <span class="flash-old">5.200.000đ</span>
+            <span class="flash-pct">-25%</span>
+          </div>
+          <div class="flash-bar"><div class="flash-bar-fill" style="width:68%"></div></div>
+          <div class="flash-item-cta">👁 Xem nhanh</div>
+        </div>
+        <div class="flash-item" onclick="openQuickView('fx1', event)">
+          <div class="flash-item-name">Corsair Vengeance DDR5 32GB</div>
+          <div class="flash-item-prices">
+            <span class="flash-price">2.190.000đ</span>
+            <span class="flash-old">2.900.000đ</span>
+            <span class="flash-pct">-24%</span>
+          </div>
+          <div class="flash-bar"><div class="flash-bar-fill" style="width:82%;background:var(--red)"></div></div>
+          <div class="flash-item-cta">👁 Xem nhanh</div>
+        </div>
+        <div class="flash-item" onclick="openQuickView('p9', event)">
+          <div class="flash-item-name">be quiet! Pure Loop 2 240mm AIO</div>
+          <div class="flash-item-prices">
+            <span class="flash-price">1.650.000đ</span>
+            <span class="flash-old">2.100.000đ</span>
+            <span class="flash-pct">-21%</span>
+          </div>
+          <div class="flash-bar"><div class="flash-bar-fill" style="width:45%"></div></div>
+          <div class="flash-item-cta">👁 Xem nhanh</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAPP PROMO STRIP -->
+  <div class="dapp-strip">
+    <div class="dapp-strip-item">
+      <div class="dsi-icon">◈</div>
+      <div>
+        <div class="dsi-title">Thanh Toán Crypto</div>
+        <div class="dsi-desc">Hỗ trợ ETH, BTC, SOL, USDT và 15+ đồng coin. Tỷ giá real-time, phí gas thấp nhất.</div>
+        <div class="dsi-link" onclick="openWalletModal()">Kết nối ví ngay →</div>
+      </div>
+    </div>
+    <div class="dapp-strip-item">
+      <div class="dsi-icon">🎫</div>
+      <div>
+        <div class="dsi-title">NFT Bảo Hành On-Chain</div>
+        <div class="dsi-desc">Mỗi đơn hàng kèm NFT bảo hành minh bạch, không thể giả mạo. Chuyển nhượng cùng sản phẩm.</div>
+        <div class="dsi-link" onclick="openMyNftsEntry()">Xem NFT của tôi →</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURED PRODUCTS -->
+  <div class="section-card" id="featuredProductsSection">
+    <div class="section-head">
+      <div class="section-head-left">
+        <span class="section-icon">🔥</span>
+        <span class="section-title">SẢN PHẨM NỔI BẬT</span>
+        <div class="section-tabs">
+          <div class="sec-tab active" onclick="setTab(this)">Tất cả</div>
+          <div class="sec-tab" onclick="setTab(this)">GPU</div>
+          <div class="sec-tab" onclick="setTab(this)">CPU</div>
+          <div class="sec-tab" onclick="setTab(this)">RAM</div>
+          <div class="sec-tab" onclick="setTab(this)">SSD</div>
+        </div>
+      </div>
+      <span class="see-all" id="catalogSeeAllBtn" onclick="openAllProductsPage()">Xem tất cả ›</span>
+    </div>
+
+    <div class="catalog-toolbar">
+      <div class="catalog-summary">Đang hiển thị <strong id="catalogResultCount">5</strong> sản phẩm phù hợp</div>
+      <div class="catalog-tools">
+        <button class="catalog-chip" id="filterNftBtn" onclick="toggleCatalogFlag('nft')">◈ Chỉ NFT</button>
+        <button class="catalog-chip" id="filterSaleBtn" onclick="toggleCatalogFlag('sale')">🏷️ Đang giảm giá</button>
+        <select class="catalog-sort" id="catalogSort" onchange="changeCatalogSort(this.value)">
+          <option value="featured">Sắp xếp: Nổi bật</option>
+          <option value="price-asc">Giá tăng dần</option>
+          <option value="price-desc">Giá giảm dần</option>
+          <option value="name-asc">Tên A-Z</option>
+        </select>
+        <button class="catalog-reset" onclick="resetCatalogFilters()">Xóa bộ lọc</button>
+      </div>
+    </div>
+
+    <div class="product-grid" id="featuredProductGrid"></div>
+    <div class="catalog-empty" id="catalogEmptyState">
+      <div class="catalog-empty-icon">🔎</div>
+      <div class="catalog-empty-title">Không có sản phẩm phù hợp</div>
+      <div class="catalog-empty-sub">Hãy thử từ khóa khác hoặc xóa bộ lọc để xem lại danh mục nổi bật.</div>
+    </div>
+  </div>
+
+  <!-- BRAND STRIP -->
+  <div class="brand-strip">
+    <div class="brand-strip-title">Thương Hiệu Hàng Đầu</div>
+    <div class="brand-logos">
+      <div class="brand-logo"><img src="assets/images/brands/nvidia.svg" alt="NVIDIA" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/amd.svg" alt="AMD" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/intel.svg" alt="Intel" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/asus-rog.svg" alt="ASUS ROG" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/msi.svg" alt="MSI" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/gigabyte.svg" alt="Gigabyte" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/corsair.svg" alt="Corsair" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/gskill.svg" alt="G.Skill" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/samsung.svg" alt="Samsung" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/wd.svg" alt="WD" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/be-quiet.svg" alt="be quiet!" loading="lazy"></div>
+      <div class="brand-logo"><img src="assets/images/brands/nzxt.svg" alt="NZXT" loading="lazy"></div>
+    </div>
+  </div>
+
+  <!-- NFT WARRANTY SECTION -->
+  <div class="nft-section">
+    <div class="nft-head">
+      <div>
+        <div class="nft-head-title">🎫 NFT Bảo Hành — Blockchain Warranty</div>
+        <div class="nft-head-sub">Minh bạch · Không thể giả mạo · Chuyển nhượng được · On-chain Polygon</div>
+      </div>
+      <div class="nft-head-right">
+        <div style="font-size:13px;font-weight:700" id="homeNftMintedCount">0 NFT đã mint</div>
+        <div>Xem trên OpenSea →</div>
+      </div>
+    </div>
+    <div class="nft-cards" id="homeNftCards">
+      <div class="nft-card" style="grid-column:1/-1">
+        <div class="nft-card-icon">◈</div>
+        <div class="nft-card-info">
+          <div class="nft-card-title">Chưa có NFT bảo hành nào</div>
+          <div class="nft-card-meta">NFT sẽ xuất hiện ở đây sau khi backend mint thành công.</div>
+        </div>
+      </div>
+      <div class="nft-card" style="background:var(--purple-light);cursor:pointer" onclick="showToast('Kết nối ví để xem NFT của bạn', 'info')">
+        <div class="nft-card-icon">◈</div>
+        <div class="nft-card-info">
+          <div class="nft-card-title" style="color:var(--purple)">Xem NFT của tôi</div>
+          <div class="nft-card-meta">Kết nối ví để kiểm tra bảo hành</div>
+          <div class="nft-card-status">
+            <div class="nft-card-token" style="color:var(--blue);cursor:pointer">Kết nối ngay →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BENEFITS -->
+  <div class="benefits-bar">
+    <div class="benefit-item">
+      <div class="benefit-icon">🚚</div>
+      <div class="benefit-text">
+        <div class="benefit-title">Giao hàng toàn quốc</div>
+        <div class="benefit-sub">Miễn phí từ 500.000đ</div>
+      </div>
+    </div>
+    <div class="benefit-item">
+      <div class="benefit-icon">🔄</div>
+      <div class="benefit-text">
+        <div class="benefit-title">Đổi trả 30 ngày</div>
+        <div class="benefit-sub">Lỗi 1 đổi 1 trong 12 tháng</div>
+      </div>
+    </div>
+    <div class="benefit-item">
+      <div class="benefit-icon">◈</div>
+      <div class="benefit-text">
+        <div class="benefit-title">Thanh toán Crypto</div>
+        <div class="benefit-sub">ETH, BTC, SOL, USDT — giảm 5%</div>
+      </div>
+    </div>
+    <div class="benefit-item">
+      <div class="benefit-icon">🎫</div>
+      <div class="benefit-text">
+        <div class="benefit-title">NFT Bảo hành số</div>
+        <div class="benefit-sub">On-chain · Chuyển nhượng được</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+@section Scripts {
+<script src="~/js/demo3_4_enhanced.js" asp-append-version="true"></script>
+<script>
+  (function () {
+    function isPlaceholder(value) {
+      const text = (value || '').trim().toLowerCase();
+      return !text || text === 'đang cập nhật' || text === 'không có dữ liệu';
+    }
+
+    function normalizeNftCards() {
+      document.querySelectorAll('#accNftGrid .acc-nft-card').forEach(card => {
+        const infoEl = card.querySelector('.acc-nft-info');
+        if (!infoEl) return;
+
+        const text = (infoEl.textContent || '').trim();
+        const match = text.match(/(\d{2}\/\d{2}\/\d{4})/);
+        const values = card.querySelectorAll('.acc-nft-order-value');
+        if (values.length < 4) return;
+
+        if (match && isPlaceholder(values[3].textContent)) {
+          values[3].textContent = match[1];
+        }
+
+        if (/^hsd\s*:/i.test(text) || /^hạn sử dụng\s*:/i.test(text)) {
+          infoEl.style.display = 'none';
+        }
+      });
+    }
+
+    const observer = new MutationObserver(normalizeNftCards);
+    document.addEventListener('DOMContentLoaded', function () {
+      const grid = document.getElementById('accNftGrid');
+      if (grid) {
+        observer.observe(grid, { childList: true, subtree: true });
+      }
+      normalizeNftCards();
+      setTimeout(normalizeNftCards, 300);
+      setTimeout(normalizeNftCards, 1200);
+    });
+  })();
+</script>
+}

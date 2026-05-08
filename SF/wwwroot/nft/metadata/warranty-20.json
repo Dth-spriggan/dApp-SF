@@ -1,0 +1,24 @@
+﻿{
+  "name": "SilverFlag Warranty NFT #20",
+  "description": "NFT b\u1EA3o h\u00E0nh backend-generated cho \u0111\u01A1n h\u00E0ng #26 v\u00E0 s\u1EA3n ph\u1EA9m ASUS ROG Maximus Z890 Hero.",
+  "image": "ipfs://QmNWqvtXUmzE9HPX2eyzjXasvUDB5eEgMLbcs33CvP5nbz",
+  "external_url": "",
+  "attributes": [
+    {
+      "trait_type": "Order ID",
+      "value": "#SF000026"
+    },
+    {
+      "trait_type": "Product",
+      "value": "ASUS ROG Maximus Z890 Hero"
+    },
+    {
+      "trait_type": "Warranty Until",
+      "value": "2028-04-23"
+    },
+    {
+      "trait_type": "Status",
+      "value": "MetadataReady"
+    }
+  ]
+}
