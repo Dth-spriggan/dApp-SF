@@ -48,7 +48,7 @@
               "RelativeDocumentMoniker": "SF\\Views\\Home\\Index.cshtml",
               "ToolTip": "C:\\Users\\Fuyuki\\source\\repos\\SF\\SF\\Views\\Home\\Index.cshtml",
               "RelativeToolTip": "SF\\Views\\Home\\Index.cshtml",
-              "ViewState": "AgIAACEAAAAAAAAAAAAAADIAAABPAAAAAAAAAA==",
+              "ViewState": "AgIAANcAAAAAAAAAAAAgwOEAAABjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2026-05-08T10:43:58.857Z",
               "EditorCaption": ""
@@ -111,8 +111,7 @@
               "RelativeToolTip": "SF\\Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-19T21:31:42.538Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-19T21:31:42.538Z"
             }
           ]
         }
