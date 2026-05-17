@@ -47,6 +47,12 @@ public class NftSchemaInitializer
             ALTER TABLE Orders ADD ShippingAddress NVARCHAR(255) NULL;
         IF COL_LENGTH('Orders', 'ContactEmail') IS NULL
             ALTER TABLE Orders ADD ContactEmail VARCHAR(255) NULL;
+        IF COL_LENGTH('Orders', 'ChainOrderId') IS NULL
+            ALTER TABLE Orders ADD ChainOrderId BIGINT NULL;
+        IF COL_LENGTH('Orders', 'DeliveryConfirmTxHash') IS NULL
+            ALTER TABLE Orders ADD DeliveryConfirmTxHash VARCHAR(100) NULL;
+        IF COL_LENGTH('Orders', 'DeliveryConfirmedAt') IS NULL
+            ALTER TABLE Orders ADD DeliveryConfirmedAt DATETIME NULL;
         """;
 
         await _db.Database.ExecuteSqlRawAsync(sql, cancellationToken);

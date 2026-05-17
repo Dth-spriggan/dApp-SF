@@ -23,7 +23,8 @@ public static class UserDtoMapper
                 .ThenInclude(detail => detail.Product)
             .Include(nft => nft.OrderDetail)
                 .ThenInclude(detail => detail.Order)
-            .OrderByDescending(nft => nft.ExpiryDate)
+            .OrderByDescending(nft => nft.OrderDetail.Order.CreatedAt ?? nft.ExpiryDate)
+            .ThenByDescending(nft => nft.TokenId)
             .ToListAsync(cancellationToken);
 
         var ordersById = orders.ToDictionary(order => order.OrderId);
@@ -70,6 +71,7 @@ public static class UserDtoMapper
 
             return new OrderViewDto
             {
+                OrderIdValue = order.OrderId,
                 Id = $"#SF{order.OrderId:D6}",
                 Date = (order.CreatedAt ?? DateTime.Now).ToString("dd/MM/yyyy"),
                 PaidAtTime = (order.CreatedAt ?? DateTime.Now).ToString("HH:mm"),
@@ -85,7 +87,15 @@ public static class UserDtoMapper
                 RecipientName = order.RecipientName ?? string.Empty,
                 RecipientPhone = order.RecipientPhone ?? string.Empty,
                 ShippingAddress = order.ShippingAddress ?? string.Empty,
-                ContactEmail = order.ContactEmail ?? string.Empty
+                ContactEmail = order.ContactEmail ?? string.Empty,
+                ChainOrderId = order.ChainOrderId,
+                DeliveryConfirmTxHash = order.DeliveryConfirmTxHash,
+                CanConfirmDelivery = string.Equals(order.Status, "Shipping", StringComparison.OrdinalIgnoreCase)
+                    && (string.IsNullOrWhiteSpace(order.TokenSymbol) || order.ChainOrderId.HasValue),
+                CanRequestRefund = string.Equals(order.Status, "Shipping", StringComparison.OrdinalIgnoreCase),
+                RequiresWalletConfirmation = string.Equals(order.Status, "Shipping", StringComparison.OrdinalIgnoreCase)
+                    && !string.IsNullOrWhiteSpace(order.TokenSymbol)
+                    && order.ChainOrderId.HasValue
             };
         }).ToList();
 
@@ -531,6 +541,8 @@ public static class UserDtoMapper
             "paid" => "status-done",
             "shipping" => "status-ship",
             "processing" => "status-proc",
+            "refundrequested" => "status-proc",
+            "refunded" => "status-done",
             _ => "status-proc"
         };
 
@@ -541,6 +553,8 @@ public static class UserDtoMapper
             "paid" => "✅ Đã thanh toán",
             "shipping" => "🚚 Đang giao hàng",
             "processing" => "⏳ Đang xử lý",
+            "refundrequested" => "⏳ Yêu cầu hoàn tiền",
+            "refunded" => "💸 Đã hoàn tiền",
             _ => "⏳ Đang xử lý"
         };
 

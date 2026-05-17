@@ -1,4 +1,4 @@
-﻿const ss = sessionStorage;
+const ss = sessionStorage;
 /* ─── AUTH STATE ─── */
 let currentUser = null; /* null = not logged in */
 
@@ -35,6 +35,7 @@ const DEMO_ACCOUNT_DETAILS = {};
 
 const STORAGE_KEY = 'silverflag-demo-state-v3';
 const UI_STORAGE_KEY = 'silverflag-demo-ui-v1';
+const USER_STORAGE_KEY = 'silverflag-user-session-v1';
 const DEFAULT_CART = [];
 const DEFAULT_CATALOG_STATE = {
   query: '',
@@ -70,11 +71,23 @@ function cloneCart(items) {
 }
 
 function readUiState() {
-  return {};
+  try {
+    const raw = ss.getItem(UI_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch (err) {
+    return {};
+  }
 }
 
 function persistUiState() {
-  return;
+  try {
+    ss.setItem(UI_STORAGE_KEY, JSON.stringify({
+      catalogState,
+    }));
+  } catch (err) {
+  }
 }
 
 function buildDefaultSessionState() {
@@ -91,11 +104,27 @@ function getDefaultAccountDetails(email) {
 }
 
 function readPersistedState() {
-  return { accounts: {} };
+  try {
+    const raw = ss.getItem(STORAGE_KEY);
+    if (!raw) return { accounts: {}, guest: buildDefaultSessionState() };
+    const parsed = JSON.parse(raw);
+    return {
+      accounts: parsed?.accounts && typeof parsed.accounts === 'object' ? parsed.accounts : {},
+      guest: parsed?.guest && typeof parsed.guest === 'object' ? parsed.guest : buildDefaultSessionState(),
+    };
+  } catch (err) {
+    return { accounts: {}, guest: buildDefaultSessionState() };
+  }
 }
 
 function writePersistedState(state) {
-  return;
+  try {
+    ss.setItem(STORAGE_KEY, JSON.stringify({
+      accounts: state?.accounts && typeof state.accounts === 'object' ? state.accounts : {},
+      guest: state?.guest && typeof state.guest === 'object' ? state.guest : buildDefaultSessionState(),
+    }));
+  } catch (err) {
+  }
 }
 
 function getAccountKey(user) {
@@ -112,11 +141,57 @@ function getRegisteredAccount(email) {
 }
 
 function saveAccountState(user, sessionState) {
-  return;
+  const state = readPersistedState();
+  const key = getAccountKey(user);
+  if (!key) {
+    state.guest = {
+      cart: cloneCart(sessionState?.cart?.length ? sessionState.cart : DEFAULT_CART),
+      voucherApplied: sessionState?.voucherApplied ? { ...sessionState.voucherApplied } : null,
+      walletConnected: !!sessionState?.walletConnected,
+      walletAddress: sessionState?.walletAddress || '',
+    };
+    writePersistedState(state);
+    return;
+  }
+
+  state.accounts[key] = {
+    cart: cloneCart(sessionState?.cart?.length ? sessionState.cart : DEFAULT_CART),
+    voucherApplied: sessionState?.voucherApplied ? { ...sessionState.voucherApplied } : null,
+    walletConnected: !!sessionState?.walletConnected,
+    walletAddress: sessionState?.walletAddress || '',
+  };
+  writePersistedState(state);
 }
 
 function saveRegisteredAccount(user, password) {
   return;
+}
+
+function readPersistedUser() {
+  try {
+    const raw = ss.getItem(USER_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch (err) {
+    return null;
+  }
+}
+
+function persistCurrentUserSnapshot(user) {
+  try {
+    if (!user) {
+      ss.removeItem(USER_STORAGE_KEY);
+      return;
+    }
+
+    ss.setItem(USER_STORAGE_KEY, JSON.stringify({
+      ...user,
+      address: user.address || {},
+      accountData: user.accountData || { orders: [], nfts: [] },
+    }));
+  } catch (err) {
+  }
 }
 
 /* ─── PRODUCT CATALOG ─── */
@@ -785,6 +860,18 @@ function simulateLogin(user) {
     return;
   }
 
+  const persistedState = readPersistedState();
+  const savedAccountState = getSavedAccountState(getAccountKey(user));
+  const fallbackState = currentUser
+    ? {
+        cart,
+        voucherApplied,
+        walletConnected,
+        walletAddress,
+      }
+    : (persistedState.guest || buildDefaultSessionState());
+  const nextSessionState = savedAccountState || fallbackState;
+
   currentUser = {
       ...user,
       email: user.email || '',
@@ -792,11 +879,14 @@ function simulateLogin(user) {
       address: user.address || {},
       accountData: user.accountData || { orders: [], nfts: [] },
     };
+    persistCurrentUserSnapshot(currentUser);
     applySessionState({
       ...buildDefaultSessionState(),
-      walletConnected,
-      walletAddress,
+      ...nextSessionState,
+      walletConnected: nextSessionState.walletConnected ?? walletConnected,
+      walletAddress: nextSessionState.walletAddress || walletAddress,
     });
+    persistCurrentState();
     /* Update header button */
     document.getElementById('headerAccLabel').textContent = (currentUser.name || '').split(' ').pop();
   /* Update account page data */
@@ -817,7 +907,18 @@ function simulateLogin(user) {
     renderAccountData();
   }
 
+function hydrateCurrentUserFromSnapshot() {
+  if (currentUser) return currentUser;
+
+  const persistedUser = readPersistedUser();
+  if (!persistedUser || persistedUser.isAdmin) return null;
+
+  simulateLogin(persistedUser);
+  return currentUser;
+}
+
 function handleAccountClick() {
+  hydrateCurrentUserFromSnapshot();
   if (currentUser?.isAdmin && currentUser?.redirectUrl) {
     window.location.href = currentUser.redirectUrl;
     return;
@@ -832,6 +933,7 @@ function openAccountPage() {
 }
 
 function openMyNftsEntry() {
+  hydrateCurrentUserFromSnapshot();
   if (!currentUser) {
     openAuthModal();
     showToast('Vui lòng đăng nhập để xem NFT bảo hành của bạn', 'warn');
@@ -923,13 +1025,17 @@ async function doLogout() {
     await apiFetch('/api/account/logout', { method: 'POST' });
   } catch (err) {}
   currentUser = null;
+  persistCurrentUserSnapshot(null);
   document.getElementById('headerAccLabel').textContent = 'Đăng nhập';
   document.getElementById('accWeb3Badge').style.display = 'none';
+  const guestState = readPersistedState().guest || buildDefaultSessionState();
   applySessionState({
     ...buildDefaultSessionState(),
-    walletConnected,
-    walletAddress,
+    ...guestState,
+    walletConnected: guestState.walletConnected ?? walletConnected,
+    walletAddress: guestState.walletAddress || walletAddress,
   });
+  persistCurrentState();
   closeAccountPage();
   showToast('👋 Đã đăng xuất thành công', 'info');
 }
@@ -941,7 +1047,9 @@ async function restoreServerSession() {
       simulateLogin(user);
     }
   } catch (err) {
-    currentUser = null;
+    if (!hydrateCurrentUserFromSnapshot()) {
+      currentUser = null;
+    }
   } finally {
     await syncWalletFromProvider();
     loadHomeNftShowcase();
@@ -960,6 +1068,23 @@ const nftMetadataCache = new Map();
 const BANK_TRANSFER_ACCOUNT_NO = '141329092005';
 const BANK_TRANSFER_BANK_CODE = 'MB';
 const BANK_TRANSFER_ACCOUNT_NAME = 'SILVERFLAG PC';
+const ESCROW_CONTRACT_ADDRESS = '0xdc251d82647e3FA2c4D5200eCcd3622b85d61263';
+const ESCROW_SAPPHIRE_TESTNET = {
+  chainId: '0x5aff',
+  chainName: 'Oasis Sapphire Testnet',
+  nativeCurrency: {
+    name: 'TEST',
+    symbol: 'TEST',
+    decimals: 18,
+  },
+  rpcUrls: ['https://testnet.sapphire.oasis.dev'],
+  blockExplorerUrls: ['https://explorer.oasis.io/testnet/sapphire']
+};
+const ESCROW_ABI = [
+  'function confirmDelivery(uint256 orderId)',
+  'function getOrder(uint256 orderId) view returns (address buyer, address seller, uint256 amount, uint8 status)',
+  'function refundBuyer(uint256 orderId)'
+];
 let bankTransferContent = 'SF PAYMENT';
 
 const VOUCHERS = {
@@ -1120,6 +1245,8 @@ function renderOrders() {
         <div class="acc-order-footer">
           <span class="acc-order-total">${order.total}</span>
           <div class="acc-order-btns">
+            ${order.canConfirmDelivery ? `<button class="acc-order-btn primary" onclick="confirmOrderDelivery(${order.orderIdValue})">${order.requiresWalletConfirmation ? 'Đã nhận được hàng (MetaMask)' : 'Đã nhận được hàng'}</button>` : ''}
+            ${order.canRequestRefund ? `<button class="acc-order-btn secondary" style="margin-left:8px" onclick="requestOrderRefund(${order.orderIdValue})">Yêu cầu hoàn tiền</button>` : ''}
             ${(order.actions || []).map(action => `<button class="acc-order-btn ${action.kind}" onclick="showToast('${action.toast}','${action.type || 'info'}')">${action.label}</button>`).join('')}
           </div>
         </div>
@@ -1145,7 +1272,122 @@ function renderOrders() {
         footerEl.insertAdjacentHTML('beforebegin', `<div class="acc-order-payment">Thanh toan TEST: ${order.cryptoTotal}</div>`);
       }
     }
+
+    if (order.deliveryConfirmTxHash) {
+      const bodyEl = itemEl.querySelector('.acc-order-body');
+      const footerEl = itemEl.querySelector('.acc-order-footer');
+      if (bodyEl && footerEl && !bodyEl.querySelector('.acc-order-confirmed-tx')) {
+        footerEl.insertAdjacentHTML('afterend', `<div class="acc-order-payment acc-order-confirmed-tx">Tx xác nhận nhận hàng: ${escapeHtml(order.deliveryConfirmTxHash)}</div>`);
+      }
+    }
   });
+}
+
+async function ensureEscrowSapphireNetwork() {
+  const provider = getEthereumProvider();
+  if (!provider) {
+    throw new Error('Không tìm thấy MetaMask trong trình duyệt hiện tại.');
+  }
+
+  const currentChainId = await provider.request({ method: 'eth_chainId' });
+  if (currentChainId === ESCROW_SAPPHIRE_TESTNET.chainId) {
+    return;
+  }
+
+  try {
+    await provider.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: ESCROW_SAPPHIRE_TESTNET.chainId }]
+    });
+  } catch (error) {
+    if (error?.code === 4902) {
+      await provider.request({
+        method: 'wallet_addEthereumChain',
+        params: [ESCROW_SAPPHIRE_TESTNET]
+      });
+      return;
+    }
+
+    throw error;
+  }
+}
+
+async function confirmOrderDelivery(orderId) {
+  hydrateCurrentUserFromSnapshot();
+  if (!currentUser) {
+    openAuthModal();
+    showToast('Vui lòng đăng nhập để xác nhận nhận hàng.', 'warn');
+    return;
+  }
+
+  const order = currentUser?.accountData?.orders?.find(item => item.orderIdValue === orderId);
+  if (!order || !order.canConfirmDelivery) {
+    showToast('Đơn hàng này hiện chưa thể xác nhận đã nhận.', 'warn');
+    return;
+  }
+
+  let txHash = null;
+
+  try {
+    if (order.requiresWalletConfirmation) {
+      if (typeof ethers === 'undefined') {
+        throw new Error('Chưa tải thư viện ví để xác nhận on-chain.');
+      }
+
+      await ensureEscrowSapphireNetwork();
+      const provider = new ethers.BrowserProvider(getEthereumProvider());
+      await provider.send('eth_requestAccounts', []);
+      const signer = await provider.getSigner();
+      const signerAddress = await signer.getAddress();
+
+      if (!walletConnected || !walletAddress || signerAddress.toLowerCase() !== walletAddress.toLowerCase()) {
+        setWalletState(signerAddress);
+      }
+
+      const contract = new ethers.Contract(ESCROW_CONTRACT_ADDRESS, ESCROW_ABI, signer);
+      showToast('Đang chờ xác nhận giao dịch nhận hàng trong MetaMask...', 'info');
+      const tx = await contract.confirmDelivery(BigInt(order.chainOrderId));
+      txHash = tx.hash;
+      await tx.wait();
+    }
+
+    const updatedUser = await apiFetch(`/api/checkout/orders/${orderId}/confirm-delivery`, {
+      method: 'POST',
+      body: JSON.stringify({ txHash }),
+    });
+
+    simulateLogin(updatedUser);
+    showToast('✅ Đã xác nhận nhận hàng thành công.');
+  } catch (err) {
+    showToast(err?.message || 'Không thể xác nhận nhận hàng.', 'warn');
+  }
+}
+
+async function requestOrderRefund(orderId) {
+  hydrateCurrentUserFromSnapshot();
+  if (!currentUser) {
+    openAuthModal();
+    showToast('Vui lòng đăng nhập để yêu cầu hoàn tiền.', 'warn');
+    return;
+  }
+
+  const order = currentUser?.accountData?.orders?.find(item => item.orderIdValue === orderId);
+  if (!order || !order.canRequestRefund) {
+    showToast('Đơn hàng này hiện chưa thể yêu cầu hoàn tiền.', 'warn');
+    return;
+  }
+
+  try {
+    const updatedUser = await apiFetch(`/api/checkout/orders/${orderId}/request-refund`, {
+      method: 'POST',
+      body: JSON.stringify({}),
+    });
+
+    simulateLogin(updatedUser);
+    showToast('✅ Đã gửi yêu cầu hoàn tiền thành công.');
+  } catch (err) {
+    showToast(err?.message || 'Không thể yêu cầu hoàn tiền.', 'warn');
+  }
 }
 
 function renderNfts() {
@@ -1483,7 +1725,12 @@ function applySessionState(sessionState) {
 }
 
 function persistCurrentState() {
-  return;
+  saveAccountState(currentUser, {
+    cart,
+    voucherApplied,
+    walletConnected,
+    walletAddress,
+  });
 }
 
 /* ─── CART DRAWER ─── */
@@ -1655,6 +1902,7 @@ function applyVoucher() {
 /* ─── CHECKOUT from drawer ─── */
 function proceedToCheckout() { 
   if (cart.length === 0) return; 
+  hydrateCurrentUserFromSnapshot();
   if (!currentUser) { 
     closeCartDrawer(); 
     openAuthModal(); 
@@ -1908,6 +2156,7 @@ async function connectWallet(name, options = {}) {
 
 /* ─── PAYMENT ─── */
 async function handleConfirmPayment() {
+  hydrateCurrentUserFromSnapshot();
   if (!currentUser) {
     closeModal('checkoutModal');
     openAuthModal();
@@ -2174,7 +2423,22 @@ applyDemoTextFixesSafe();
     console.error('Failed to initialize product catalog', err);
   }
   loadHomeNftShowcase();
-  applySessionState(buildDefaultSessionState());
+  const persistedUser = readPersistedUser();
+  if (persistedUser && !persistedUser.isAdmin) {
+    currentUser = {
+      ...persistedUser,
+      email: persistedUser.email || '',
+      phone: persistedUser.phone || '',
+      address: persistedUser.address || {},
+      accountData: persistedUser.accountData || { orders: [], nfts: [] },
+    };
+    document.getElementById('headerAccLabel').textContent = (currentUser.name || '').split(' ').pop() || 'Tài khoản';
+    renderAccountData();
+  }
+  const bootstrapState = persistedUser && !persistedUser.isAdmin
+    ? (getSavedAccountState(getAccountKey(persistedUser)) || buildDefaultSessionState())
+    : (readPersistedState().guest || buildDefaultSessionState());
+  applySessionState(bootstrapState);
   initializeWalletIntegration();
 })();
 const el = document.querySelector('.product');

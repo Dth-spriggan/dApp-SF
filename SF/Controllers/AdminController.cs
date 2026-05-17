@@ -8,10 +8,12 @@ public class AdminController : Controller
 {
     private const string SessionAdminKey = "sf.admin";
     private readonly SilverFlagPcContext _db;
+    private readonly IWebHostEnvironment _env;
 
-    public AdminController(SilverFlagPcContext db)
+    public AdminController(SilverFlagPcContext db, IWebHostEnvironment env)
     {
         _db = db;
+        _env = env;
     }
 
     [HttpGet("/Admin")]
@@ -72,6 +74,18 @@ public class AdminController : Controller
             return RedirectToAction(nameof(Products), new { message = errorMessage });
         }
 
+        var imageUrl = string.IsNullOrWhiteSpace(input.ImageUrl) ? null : input.ImageUrl.Trim();
+        if (input.ImageFile != null && input.ImageFile.Length > 0)
+        {
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(input.ImageFile.FileName);
+            var filePath = Path.Combine(_env.WebRootPath, "image", fileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await input.ImageFile.CopyToAsync(stream, cancellationToken);
+            }
+            imageUrl = "/image/" + fileName;
+        }
+
         var product = new Product
         {
             Name = input.Name.Trim(),
@@ -79,7 +93,7 @@ public class AdminController : Controller
             PriceVnd = input.PriceVnd,
             PriceCrypto = input.PriceCrypto,
             Stock = input.Stock,
-            ImageUrl = string.IsNullOrWhiteSpace(input.ImageUrl) ? null : input.ImageUrl.Trim(),
+            ImageUrl = imageUrl,
             NftWarrantyEnabled = input.NftWarrantyEnabled,
             WarrantyMonths = input.NftWarrantyEnabled ? Math.Max(input.WarrantyMonths ?? 24, 1) : null
         };
@@ -109,12 +123,26 @@ public class AdminController : Controller
             return RedirectToAction(nameof(Products), new { message = "Khong tim thay san pham can cap nhat." });
         }
 
+        if (input.ImageFile != null && input.ImageFile.Length > 0)
+        {
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(input.ImageFile.FileName);
+            var filePath = Path.Combine(_env.WebRootPath, "image", fileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await input.ImageFile.CopyToAsync(stream, cancellationToken);
+            }
+            product.ImageUrl = "/image/" + fileName;
+        }
+        else if (!string.IsNullOrWhiteSpace(input.ImageUrl))
+        {
+            product.ImageUrl = input.ImageUrl.Trim();
+        }
+
         product.Name = input.Name.Trim();
         product.CategoryId = input.CategoryId;
         product.PriceVnd = input.PriceVnd;
         product.PriceCrypto = input.PriceCrypto;
         product.Stock = input.Stock;
-        product.ImageUrl = string.IsNullOrWhiteSpace(input.ImageUrl) ? null : input.ImageUrl.Trim();
         product.NftWarrantyEnabled = input.NftWarrantyEnabled;
         product.WarrantyMonths = input.NftWarrantyEnabled ? Math.Max(input.WarrantyMonths ?? 24, 1) : null;
 
@@ -314,6 +342,7 @@ public class AdminController : Controller
         PaymentMethod = string.IsNullOrWhiteSpace(order.TokenSymbol) ? "Thanh toán thường" : $"Crypto ({order.TokenSymbol})",
         Wallet = order.Wallet ?? string.Empty,
         TxHash = order.TxHash ?? string.Empty,
+        ChainOrderId = order.ChainOrderId,
         CreatedAt = order.CreatedAt,
         TotalAmount = order.TotalAmount,
         Items = order.OrderDetails.Select(detail => new AdminOrderItemViewModel

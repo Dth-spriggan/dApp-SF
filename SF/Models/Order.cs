@@ -27,6 +27,12 @@ public partial class Order
 
     public string? Status { get; set; }
 
+    public long? ChainOrderId { get; set; }
+
+    public string? DeliveryConfirmTxHash { get; set; }
+
+    public DateTime? DeliveryConfirmedAt { get; set; }
+
     public DateTime? CreatedAt { get; set; }
 
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();

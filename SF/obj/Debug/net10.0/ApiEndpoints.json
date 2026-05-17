@@ -163,6 +163,64 @@
   },
   {
     "ContainingType": "SF.Controllers.CheckoutApiController",
+    "Method": "ConfirmDelivery",
+    "RelativePath": "api/checkout/orders/{orderId}/confirm-delivery",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "SF.Models.ConfirmDeliveryRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SF.Controllers.CheckoutApiController",
+    "Method": "ConfirmRefund",
+    "RelativePath": "api/checkout/orders/{orderId}/confirm-refund",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "SF.Models.ConfirmDeliveryRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SF.Controllers.CheckoutApiController",
+    "Method": "RequestRefund",
+    "RelativePath": "api/checkout/orders/{orderId}/request-refund",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SF.Controllers.CheckoutApiController",
     "Method": "PrepareCrypto",
     "RelativePath": "api/checkout/prepare-crypto",
     "HttpMethod": "POST",

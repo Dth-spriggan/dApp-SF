@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "C:\\Users\\Fuyuki\\source\\repos\\SF\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A35D2ADF-65BA-390C-BB7E-67640FD9A632}|SF\\SF.csproj|c:\\users\\fuyuki\\source\\repos\\sf\\sf\\contracts\\warrantynftabi.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{A35D2ADF-65BA-390C-BB7E-67640FD9A632}|SF\\SF.csproj|solutionrelative:sf\\contracts\\warrantynftabi.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A35D2ADF-65BA-390C-BB7E-67640FD9A632}|SF\\SF.csproj|c:\\users\\fuyuki\\source\\repos\\sf\\sf\\contracts\\warrantynft.sol||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A35D2ADF-65BA-390C-BB7E-67640FD9A632}|SF\\SF.csproj|solutionrelative:sf\\contracts\\warrantynft.sol||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A35D2ADF-65BA-390C-BB7E-67640FD9A632}|SF\\SF.csproj|c:\\users\\fuyuki\\source\\repos\\sf\\sf\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{A35D2ADF-65BA-390C-BB7E-67640FD9A632}|SF\\SF.csproj|solutionrelative:sf\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -43,19 +51,43 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "WarrantyNftAbi.json",
+              "DocumentMoniker": "C:\\Users\\Fuyuki\\source\\repos\\SF\\SF\\Contracts\\WarrantyNftAbi.json",
+              "RelativeDocumentMoniker": "SF\\Contracts\\WarrantyNftAbi.json",
+              "ToolTip": "C:\\Users\\Fuyuki\\source\\repos\\SF\\SF\\Contracts\\WarrantyNftAbi.json",
+              "RelativeToolTip": "SF\\Contracts\\WarrantyNftAbi.json",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAA0AAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-15T14:38:55.798Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "WarrantyNFT.sol",
+              "DocumentMoniker": "C:\\Users\\Fuyuki\\source\\repos\\SF\\SF\\Contracts\\WarrantyNFT.sol",
+              "RelativeDocumentMoniker": "SF\\Contracts\\WarrantyNFT.sol",
+              "ToolTip": "C:\\Users\\Fuyuki\\source\\repos\\SF\\SF\\Contracts\\WarrantyNFT.sol",
+              "RelativeToolTip": "SF\\Contracts\\WarrantyNFT.sol",
+              "ViewState": "AgIAAEIAAAAAAAAAAAAAAG8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-05-15T14:38:50.256Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\Fuyuki\\source\\repos\\SF\\SF\\Views\\Home\\Index.cshtml",
               "RelativeDocumentMoniker": "SF\\Views\\Home\\Index.cshtml",
               "ToolTip": "C:\\Users\\Fuyuki\\source\\repos\\SF\\SF\\Views\\Home\\Index.cshtml",
               "RelativeToolTip": "SF\\Views\\Home\\Index.cshtml",
-              "ViewState": "AgIAANcAAAAAAAAAAAAgwOEAAABjAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-05-08T10:43:58.857Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-08T10:43:58.857Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "package.json",
               "DocumentMoniker": "C:\\Users\\Fuyuki\\source\\repos\\SF\\SF\\package.json",
               "RelativeDocumentMoniker": "SF\\package.json",
@@ -67,7 +99,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "_Layout.cshtml",
               "DocumentMoniker": "C:\\Users\\Fuyuki\\source\\repos\\SF\\SF\\Views\\Shared\\_Layout.cshtml",
               "RelativeDocumentMoniker": "SF\\Views\\Shared\\_Layout.cshtml",
@@ -79,7 +111,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "HomeController.cs",
               "DocumentMoniker": "C:\\Users\\Fuyuki\\source\\repos\\SF\\SF\\Controllers\\HomeController.cs",
               "RelativeDocumentMoniker": "SF\\Controllers\\HomeController.cs",
@@ -91,7 +123,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "demo3_4_enhanced.js",
               "DocumentMoniker": "C:\\Users\\Fuyuki\\source\\repos\\SF\\SF\\wwwroot\\js\\demo3_4_enhanced.js",
               "RelativeDocumentMoniker": "SF\\wwwroot\\js\\demo3_4_enhanced.js",
@@ -103,7 +135,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Fuyuki\\source\\repos\\SF\\SF\\Program.cs",
               "RelativeDocumentMoniker": "SF\\Program.cs",

@@ -1,0 +1,25 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Escrow.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\n\ncontract Escrow {\n    enum OrderStatus {\n        None,\n        Deposited,\n        Released,\n        Refunded\n    }\n\n    struct Order {\n        address buyer;\n        uint256 amount;\n        OrderStatus status;\n    }\n\n    address public seller;\n    mapping(uint256 => Order) private orders;\n\n    event Deposited(uint256 indexed orderId, address indexed buyer, uint256 amount);\n    event PaymentReleased(uint256 indexed orderId, address indexed seller, uint256 amount);\n    event Refunded(uint256 indexed orderId, address indexed buyer, uint256 amount);\n\n    constructor(address _seller) {\n        require(_seller != address(0), \"Invalid seller\");\n        seller = _seller;\n    }\n\n    function deposit(uint256 orderId) external payable {\n        require(orderId != 0, \"Invalid order\");\n        require(msg.value > 0, \"Must send ETH\");\n\n        Order storage order = orders[orderId];\n        require(order.status == OrderStatus.None, \"Order exists\");\n\n        order.buyer = msg.sender;\n        order.amount = msg.value;\n        order.status = OrderStatus.Deposited;\n\n        emit Deposited(orderId, msg.sender, msg.value);\n    }\n\n    function confirmDelivery(uint256 orderId) external {\n        Order storage order = orders[orderId];\n        require(order.status == OrderStatus.Deposited, \"Order not funded\");\n        require(msg.sender == order.buyer, \"Only buyer\");\n\n        uint256 paymentAmount = order.amount;\n        order.status = OrderStatus.Released;\n\n        (bool success, ) = payable(seller).call{value: paymentAmount}(\"\");\n        require(success, \"Transfer failed\");\n\n        emit PaymentReleased(orderId, seller, paymentAmount);\n    }\n\n    function refundBuyer(uint256 orderId) external {\n        Order storage order = orders[orderId];\n        require(order.status == OrderStatus.Deposited, \"Order not funded\");\n        require(msg.sender == seller, \"Only seller\");\n\n        uint256 refundAmount = order.amount;\n        order.status = OrderStatus.Refunded;\n\n        (bool success, ) = payable(order.buyer).call{value: refundAmount}(\"\");\n        require(success, \"Refund failed\");\n\n        emit Refunded(orderId, order.buyer, refundAmount);\n    }\n\n    function getOrder(uint256 orderId)\n        external\n        view\n        returns (\n            address buyer,\n            address currentSeller,\n            uint256 amount,\n            uint8 status\n        )\n    {\n        Order storage order = orders[orderId];\n        return (order.buyer, seller, order.amount, uint8(order.status));\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "evmVersion": "paris",
+    "optimizer": {
+      "enabled": true,
+      "runs": 1000
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "metadata"
+        ]
+      }
+    }
+  }
+}

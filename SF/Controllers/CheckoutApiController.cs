@@ -91,7 +91,8 @@ public class CheckoutApiController : ControllerBase
             RecipientName = pending.RecipientName,
             RecipientPhone = pending.RecipientPhone,
             ShippingAddress = pending.ShippingAddress,
-            ContactEmail = pending.ContactEmail
+            ContactEmail = pending.ContactEmail,
+            ChainOrderId = request.ChainOrderId
         };
 
         try
@@ -144,6 +145,110 @@ public class CheckoutApiController : ControllerBase
         });
     }
 
+    [HttpPost("orders/{orderId:int}/confirm-delivery")]
+    public async Task<IActionResult> ConfirmDelivery(int orderId, [FromBody] ConfirmDeliveryRequest request, CancellationToken cancellationToken)
+    {
+        var user = await GetSessionUserAsync(cancellationToken);
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        var order = await _db.Orders.FirstOrDefaultAsync(
+            x => x.OrderId == orderId && x.UserId == user.UserId,
+            cancellationToken);
+
+        if (order is null)
+        {
+            return NotFound(new { message = "Khong tim thay don hang cua ban." });
+        }
+
+        var status = (order.Status ?? string.Empty).Trim().ToLowerInvariant();
+        if (status != "shipping")
+        {
+            return BadRequest(new { message = "Chi don hang dang giao moi co the xac nhan da nhan." });
+        }
+
+        var isCryptoOrder = !string.IsNullOrWhiteSpace(order.TokenSymbol);
+        if (isCryptoOrder && order.ChainOrderId is null)
+        {
+            return BadRequest(new { message = "Don crypto nay chua co ma giao dich escrow de xac nhan nhan hang." });
+        }
+
+        if (isCryptoOrder && string.IsNullOrWhiteSpace(request.TxHash))
+        {
+            return BadRequest(new { message = "Vui long hoan tat giao dich xac nhan tren vi truoc khi cap nhat don hang." });
+        }
+
+        order.Status = "Completed";
+        order.DeliveryConfirmedAt = DateTime.Now;
+        order.DeliveryConfirmTxHash = string.IsNullOrWhiteSpace(request.TxHash) ? order.DeliveryConfirmTxHash : request.TxHash.Trim();
+
+        await _db.SaveChangesAsync(cancellationToken);
+        return Ok(await user.ToSessionDtoAsync(_db, _environment.WebRootPath, cancellationToken));
+    }
+
+    [HttpPost("orders/{orderId:int}/request-refund")]
+    public async Task<IActionResult> RequestRefund(int orderId, CancellationToken cancellationToken)
+    {
+        var user = await GetSessionUserAsync(cancellationToken);
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        var order = await _db.Orders.FirstOrDefaultAsync(
+            x => x.OrderId == orderId && x.UserId == user.UserId,
+            cancellationToken);
+
+        if (order is null)
+        {
+            return NotFound(new { message = "Khong tim thay don hang cua ban." });
+        }
+
+        var status = (order.Status ?? string.Empty).Trim().ToLowerInvariant();
+        if (status != "shipping")
+        {
+            return BadRequest(new { message = "Chi co the yeu cau hoan tien khi don dang giao." });
+        }
+
+        order.Status = "RefundRequested";
+        await _db.SaveChangesAsync(cancellationToken);
+        return Ok(await user.ToSessionDtoAsync(_db, _environment.WebRootPath, cancellationToken));
+    }
+
+    [HttpPost("orders/{orderId:int}/confirm-refund")]
+    public async Task<IActionResult> ConfirmRefund(int orderId, [FromBody] ConfirmDeliveryRequest request, CancellationToken cancellationToken)
+    {
+        // This is called by admin after smart contract refund
+        var adminRole = HttpContext.Session.GetString("sf.admin");
+        if (adminRole != "1")
+        {
+            return Unauthorized();
+        }
+
+        var order = await _db.Orders.FirstOrDefaultAsync(x => x.OrderId == orderId, cancellationToken);
+        if (order is null)
+        {
+            return NotFound(new { message = "Khong tim thay don hang." });
+        }
+
+        if (order.Status != "RefundRequested")
+        {
+            return BadRequest(new { message = "Don hang chua yeu cau hoan tien." });
+        }
+
+        order.Status = "Refunded";
+        // Can store the refund tx hash if needed, reusing DeliveryConfirmTxHash or adding a new field
+        if (!string.IsNullOrWhiteSpace(request.TxHash))
+        {
+            order.DeliveryConfirmTxHash = request.TxHash; // Reusing this field to store refund tx for simplicity
+        }
+
+        await _db.SaveChangesAsync(cancellationToken);
+        return Ok(new { success = true });
+    }
+
     private async Task<User?> GetSessionUserAsync(CancellationToken cancellationToken)
     {
         var userId = HttpContext.Session.GetInt32(SessionUserIdKey);
@@ -191,6 +296,7 @@ public class CheckoutApiController : ControllerBase
             RecipientPhone = shippingInfo.RecipientPhone,
             ShippingAddress = shippingInfo.ShippingAddress,
             ContactEmail = shippingInfo.ContactEmail,
+            ChainOrderId = request.ChainOrderId,
             Status = string.IsNullOrWhiteSpace(request.Status) ? "Processing" : request.Status,
             CreatedAt = DateTime.Now
         };

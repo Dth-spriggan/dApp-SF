@@ -89,9 +89,14 @@ public partial class SilverFlagPcContext : DbContext
             entity.Property(e => e.ContactEmail)
                 .HasMaxLength(255)
                 .IsUnicode(false);
+            entity.Property(e => e.ChainOrderId);
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+            entity.Property(e => e.DeliveryConfirmedAt).HasColumnType("datetime");
+            entity.Property(e => e.DeliveryConfirmTxHash)
+                .HasMaxLength(100)
+                .IsUnicode(false);
             entity.Property(e => e.RecipientName).HasMaxLength(100);
             entity.Property(e => e.RecipientPhone)
                 .HasMaxLength(20)

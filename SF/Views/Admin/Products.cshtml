@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    <form method="post" action="/Admin/products/create" class="admin-form" style="margin-top:0">
+    <form method="post" action="/Admin/products/create" class="admin-form" style="margin-top:0" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
         <div class="admin-field-grid">
             <div class="admin-field admin-field-full">
@@ -50,7 +50,7 @@
             </div>
             <div class="admin-field admin-field-full">
                 <label>Ảnh sản phẩm</label>
-                <input name="ImageUrl" value="@Model.NewProduct.ImageUrl" />
+                <input type="file" name="ImageFile" accept="image/*" />
             </div>
             <div class="admin-field">
                 <label>Bật NFT bảo hành</label>
@@ -89,7 +89,7 @@
                     </div>
                 </div>
 
-                <form method="post" action="/Admin/products/update" class="admin-form" style="margin-top:0">
+                <form method="post" action="/Admin/products/update" class="admin-form" style="margin-top:0" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="ProductId" value="@product.ProductId" />
                     <div class="admin-field-grid">
@@ -127,7 +127,15 @@
                         </div>
                         <div class="admin-field admin-field-full">
                             <label>Ảnh sản phẩm</label>
-                            <input name="ImageUrl" value="@product.ImageUrl" />
+                            @if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+                            {
+                                <div style="margin-bottom: 8px;">
+                                    <img src="@product.ImageUrl" alt="Product Image" style="max-height: 100px; border-radius: 4px;" />
+                                </div>
+                            }
+                            <input type="hidden" name="ImageUrl" value="@product.ImageUrl" />
+                            <input type="file" name="ImageFile" accept="image/*" />
+                            <div style="font-size: 12px; color: var(--text-2); margin-top: 4px;">Để trống nếu không muốn thay đổi ảnh cũ.</div>
                         </div>
                         <div class="admin-field">
                             <label>Bật NFT bảo hành</label>

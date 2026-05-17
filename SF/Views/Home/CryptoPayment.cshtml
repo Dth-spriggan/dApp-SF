@@ -471,6 +471,7 @@ let signer = null;
 let contract = null;
 let productName = "";
 let productPrice = "0";
+let currentChainOrderId = null;
 
 const params = new URLSearchParams(window.location.search);
 productName = params.get("name") || "Đơn hàng crypto";
@@ -575,8 +576,8 @@ async function pay() {
     txHint.textContent = "";
 
     const value = ethers.parseEther(productPrice);
-    const chainOrderId = BigInt(Date.now());
-    const txRequest = await contract.deposit.populateTransaction(chainOrderId, { value });
+    currentChainOrderId = BigInt(Date.now());
+    const txRequest = await contract.deposit.populateTransaction(currentChainOrderId, { value });
 
     const tx = await signer.sendTransaction({
       to: contractAddress,
@@ -597,7 +598,8 @@ async function pay() {
       },
       body: JSON.stringify({
         txHash: tx.hash,
-        wallet: await signer.getAddress()
+        wallet: await signer.getAddress(),
+        chainOrderId: Number(currentChainOrderId)
       })
     });
 

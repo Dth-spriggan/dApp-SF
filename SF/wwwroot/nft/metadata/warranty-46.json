@@ -1,0 +1,36 @@
+﻿{
+  "name": "SilverFlag Warranty NFT #46",
+  "description": "NFT b\u1EA3o h\u00E0nh backend-generated cho \u0111\u01A1n h\u00E0ng #52 v\u00E0 s\u1EA3n ph\u1EA9m NZXT H9 Flow Mid Tower White.",
+  "image": "ipfs://QmeEMu1sKPSmDt1Mqs3PQBAG58dAs5UyLR5HS2gSbZejYb",
+  "external_url": "",
+  "attributes": [
+    {
+      "trait_type": "Order ID",
+      "value": "#SF000052"
+    },
+    {
+      "trait_type": "Product",
+      "value": "NZXT H9 Flow Mid Tower White"
+    },
+    {
+      "trait_type": "Product Price",
+      "value": "4,690,000 VND"
+    },
+    {
+      "trait_type": "Purchase Date",
+      "value": "2026-05-17"
+    },
+    {
+      "trait_type": "Expiry Date",
+      "value": "2028-05-17"
+    },
+    {
+      "trait_type": "Warranty Until",
+      "value": "2028-05-17"
+    },
+    {
+      "trait_type": "Status",
+      "value": "MetadataReady"
+    }
+  ]
+}

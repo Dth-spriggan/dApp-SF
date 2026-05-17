@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace SF.Models;
 
 public abstract class AdminPageViewModel
@@ -58,6 +60,7 @@ public class AdminOrderViewModel
     public string PaymentMethod { get; set; } = string.Empty;
     public string Wallet { get; set; } = string.Empty;
     public string TxHash { get; set; } = string.Empty;
+    public long? ChainOrderId { get; set; }
     public DateTime? CreatedAt { get; set; }
     public decimal TotalAmount { get; set; }
     public List<AdminOrderItemViewModel> Items { get; set; } = new();
@@ -99,6 +102,7 @@ public class ProductEditorInput
     public decimal? PriceCrypto { get; set; }
     public int Stock { get; set; }
     public string? ImageUrl { get; set; }
+    public IFormFile? ImageFile { get; set; }
     public bool NftWarrantyEnabled { get; set; }
     public int? WarrantyMonths { get; set; }
 }

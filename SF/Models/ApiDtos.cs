@@ -54,6 +54,7 @@ public class CreateOrderRequest
     public string RecipientPhone { get; set; } = string.Empty;
     public string ShippingAddress { get; set; } = string.Empty;
     public string? ContactEmail { get; set; }
+    public long? ChainOrderId { get; set; }
 }
 
 public class PrepareCryptoCheckoutRequest
@@ -72,6 +73,12 @@ public class CompleteCryptoCheckoutRequest
 {
     public string? TxHash { get; set; }
     public string? Wallet { get; set; }
+    public long? ChainOrderId { get; set; }
+}
+
+public class ConfirmDeliveryRequest
+{
+    public string? TxHash { get; set; }
 }
 
 public class UserSessionDto
@@ -106,6 +113,7 @@ public class AddressViewDto
 
 public class OrderViewDto
 {
+    public int OrderIdValue { get; set; }
     public string Id { get; set; } = string.Empty;
     public string Date { get; set; } = string.Empty;
     public string? PaidAtTime { get; set; }
@@ -120,6 +128,11 @@ public class OrderViewDto
     public string RecipientPhone { get; set; } = string.Empty;
     public string ShippingAddress { get; set; } = string.Empty;
     public string ContactEmail { get; set; } = string.Empty;
+    public long? ChainOrderId { get; set; }
+    public string? DeliveryConfirmTxHash { get; set; }
+    public bool CanConfirmDelivery { get; set; }
+    public bool CanRequestRefund { get; set; }
+    public bool RequiresWalletConfirmation { get; set; }
 }
 
 public class NftViewDto

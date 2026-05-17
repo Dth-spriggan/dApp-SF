@@ -63,7 +63,7 @@
                             <label>Trạng thái đơn</label>
                             <select name="Status">
                                 @{
-                                    var statuses = new[] { "Processing", "Paid", "Shipping", "Completed", "Cancelled" };
+                                    var statuses = new[] { "Processing", "Paid", "Shipping", "Completed", "RefundRequested", "Refunded", "Cancelled" };
                                 }
                                 @foreach (var status in statuses)
                                 {
@@ -79,8 +79,12 @@
                             </select>
                         </div>
                     </div>
-                    <div class="admin-actions">
+                    <div class="admin-actions" style="display: flex; gap: 8px;">
                         <button type="submit" class="admin-btn admin-btn-primary">Lưu trạng thái</button>
+                        @if (string.Equals(order.Status, "RefundRequested", StringComparison.OrdinalIgnoreCase) && order.ChainOrderId.HasValue)
+                        {
+                            <button type="button" class="admin-btn admin-btn-secondary" onclick="executeAdminRefund(@order.OrderId, @order.ChainOrderId)">Hoàn tiền (MetaMask)</button>
+                        }
                     </div>
                 </form>
             </div>

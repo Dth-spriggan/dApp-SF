@@ -1,0 +1,36 @@
+﻿{
+  "name": "SilverFlag Warranty NFT #41",
+  "description": "NFT b\u1EA3o h\u00E0nh backend-generated cho \u0111\u01A1n h\u00E0ng #47 v\u00E0 s\u1EA3n ph\u1EA9m Hyte Y70 Mid Tower Case Firefly Edition.",
+  "image": "ipfs://QmVAHmY4b1yhqJfmdvPk3SBR36vjZYEiRZTkaNS99zNSaZ",
+  "external_url": "",
+  "attributes": [
+    {
+      "trait_type": "Order ID",
+      "value": "#SF000047"
+    },
+    {
+      "trait_type": "Product",
+      "value": "Hyte Y70 Mid Tower Case Firefly Edition"
+    },
+    {
+      "trait_type": "Product Price",
+      "value": "13,600,000 VND"
+    },
+    {
+      "trait_type": "Purchase Date",
+      "value": "2026-05-17"
+    },
+    {
+      "trait_type": "Expiry Date",
+      "value": "2028-05-17"
+    },
+    {
+      "trait_type": "Warranty Until",
+      "value": "2028-05-17"
+    },
+    {
+      "trait_type": "Status",
+      "value": "MetadataReady"
+    }
+  ]
+}
