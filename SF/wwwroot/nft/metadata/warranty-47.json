@@ -1,0 +1,36 @@
+﻿{
+  "name": "SilverFlag Warranty NFT #47",
+  "description": "NFT b\u1EA3o h\u00E0nh backend-generated cho \u0111\u01A1n h\u00E0ng #53 v\u00E0 s\u1EA3n ph\u1EA9m Samsung 990 Pro 2TB M.2 PCIe 5.0 NVMe 14.7GB/s.",
+  "image": "ipfs://QmUM6n87svjtVWBtnqc3C48nESNWqCqA6V8bV1yhDgHryr",
+  "external_url": "",
+  "attributes": [
+    {
+      "trait_type": "Order ID",
+      "value": "#SF000053"
+    },
+    {
+      "trait_type": "Product",
+      "value": "Samsung 990 Pro 2TB M.2 PCIe 5.0 NVMe 14.7GB/s"
+    },
+    {
+      "trait_type": "Product Price",
+      "value": "4,200,000 VND"
+    },
+    {
+      "trait_type": "Purchase Date",
+      "value": "2026-05-18"
+    },
+    {
+      "trait_type": "Expiry Date",
+      "value": "2028-05-18"
+    },
+    {
+      "trait_type": "Warranty Until",
+      "value": "2028-05-18"
+    },
+    {
+      "trait_type": "Status",
+      "value": "MetadataReady"
+    }
+  ]
+}

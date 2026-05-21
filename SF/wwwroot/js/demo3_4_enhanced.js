@@ -2226,6 +2226,10 @@ if (isCrypto) {
   }
 
   closeModal('checkoutModal');
+  cart = [];
+  voucherApplied = null;
+  updateCartCount();
+  persistCurrentState();
   showToast(`🚀 Chuyển sang thanh toán Crypto ≈ ${totalTestText} TEST`);
 
   setTimeout(() => {
@@ -2273,6 +2277,7 @@ if (isCrypto) {
     cart = [];
     voucherApplied = null;
     updateCartCount();
+    persistCurrentState();
     await restoreServerSession();
 
     showToast(`✅ Đặt hàng thành công! Mã đơn: #SF${String(result.orderId).padStart(6, '0')}`);
